@@ -679,7 +679,7 @@ function Remove-DirectoryTree
     if($Force -eq $False){
         # Locate a HIDDEN subdirectory named .git . This means it's a GIT REpo, so ask for confirmation
         $GitDir = (gci -Path $Path -Directory  -Attributes Hidden | where Name -eq '.git')
-        if($GitDir -ne $Null){ write-host "Warning: GIT REPO!" -f Red -b DarkYellow -NoNewLine ; $a=Read-Host -Prompt "$DirToRemove is a GIT repo! Are you sure (y/N)?" ; if($a -notmatch "y") {return;}  }
+        if($GitDir -ne $Null){ write-host "Warning: GIT REPO!" -f Red -b DarkYellow -NoNewLine ; $a=Read-Host -Prompt "$Path is a GIT repo! Are you sure (y/N)?" ; if($a -notmatch "y") {return;}  }
 
         $ExcludedPaths = (Get-ChildItem -Path 'C:\' -Depth 1 -Directory)
         if($ExcludedPaths){
@@ -725,6 +725,14 @@ function Remove-DirectoryTree
 
 } 
 
+function AutoUpdateProgress {   # NOEXPORT
+    $Len = $Global:ServiceName.Length
+    $Diff = 50 - $Len
+    For($i = 0 ; $i -lt $Diff ; $i++){ $Global:Channel += '.'}
+    $Global:ProgressMessage = "$Global:Channel... ( $Global:StepNumber on $Global:TotalSteps)"
+    Write-Progress -Activity $Global:ProgressTitle -Status $Global:ProgressMessage -PercentComplete (($Global:StepNumber / $Global:TotalSteps) * 100)
+
+}
 
 function Remove-DirectoryBinaries
 { 
