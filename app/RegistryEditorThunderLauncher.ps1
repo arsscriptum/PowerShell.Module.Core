@@ -781,6 +781,20 @@ try
         Get-Variable var_*    
    # }
 
+   $RawMembers = $var_comboBoxRecent
+
+    [System.Collections.ArrayList]$OutputMembers = @()
+    Foreach ( $RawMember in $RawMembers ) {
+        
+        $OutputProps = [ordered]@{
+            'Name'= $RawMember.Name
+            'MemberType'= $RawMember.MemberType
+        }
+        $OutputMember = New-Object -TypeName psobject -Property $OutputProps
+        $OutputMembers += $OutputMember
+    }
+    $OutputMembers | Select-Object -Property * -Unique
+
     $Path = Get-Clipboard -Raw
     Write-Verbose "Get-Clipboard => $Path"
 
@@ -862,17 +876,34 @@ try
         [string]$File += '.ps1'
         Set-Content "$File" -Value $S
 
-        #Start-Process pwsh.exe -ArgumentList ("-NoProfile -ExecutionPolicy Bypass -File `"{0}`"" -f $File) -Verb RunAs
+        Start-Process pwsh.exe -ArgumentList ("-NoProfile -ExecutionPolicy Bypass -File `"{0}`"" -f $File) -Verb RunAs
         AddLog "Wrote $File"
         #$Script:window.Close()
 
        })
 
 
+    #region handler_CBoxRecent_Changed
+    $handler_CBoxRecent_Changed = {
+        AddLog "CBoxRecent_Changed "
+            [string]$RegPath = $var_comboBoxRecent.Text
+            if(($Path -eq $Null)-Or($Path -eq '')){return;}
+            $var_textBoxRegPath.Text = $RegPath
+        }
+    #endregion handler_CBoxRecent_Changed
 
-
+    #region handler_CBoxFavourites_Changed    
+    $handler_CBoxFavourites_Changed = {
+            AddLog "CBoxFavourites_Changed "
+            [string]$RegPath = $var_comboBoxFav.Text
+            if(($Path -eq $Null)-Or($Path -eq '')){return;}
+            $var_textBoxRegPath.Text = $RegPath
+            UpdateButtonStates
+        }        
+    #endregion handler_CBoxFavourites_Changed
         
-
+    $var_comboBoxRecent.Add_SelectionChanged($handler_CBoxRecent_Changed)
+    $var_comboBoxFav.Add_SelectionChanged($handler_CBoxFavourites_Changed)
 
     $var_textBoxRegPath.Add_TextChanged({
 

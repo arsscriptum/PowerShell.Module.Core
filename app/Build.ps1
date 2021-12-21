@@ -62,10 +62,10 @@ try{
 
     $AppTitle = "New App From Template"
     $AppOrg = "Guillaume Plante"
-    Import-Module CodeCastor.PowerShell.PS2EXE
-    $CCPs2ExeMod = Get-Module CodeCastor.PowerShell.PS2EXE
+    Import-Module PowerShell.Module.Compiler
+    $CCPs2ExeMod = Get-Module PowerShell.Module.Compiler
     if($CCPs2ExeMod -eq $Null){
-        Import-Module PS2EXE
+       Import-Module PowerShell.Module.Compiler
         $Ps2ExeMod = Get-Module PS2EXE
         if($CCPs2ExeMod -eq $Null){ throw "Module import error" ; }
     }
@@ -81,12 +81,12 @@ try{
     $RootPath = (Resolve-Path "$PSScriptRoot\..").Path
     $BinPath = Join-Path $RootPath 'bin'
    
-    $ScriptsPath = Join-Path $RootPath 'scripts'
-    $ScriptFilePath = Join-Path $ScriptsPath 'New-WinAppFromTemplateGUI.ps1'
+    $ScriptsPath = Join-Path $RootPath 'app'
+    $ScriptFilePath = Join-Path $ScriptsPath 'RegistryEditorThunderLauncher.ps1'
      $ImgPath = Join-Path $ScriptsPath 'img'
     $IconPath = Join-Path $ImgPath 'Generate.ico'
-    $OutPath = Join-Path $BinPath 'Create-ProjectFromTemplate.exe'
-    $FinalAppPath = Join-Path $ScriptsPath 'Create-ProjectFromTemplate.exe'
+    $OutPath = Join-Path $BinPath 'RegistryEditorThunderLauncher.exe'
+    $FinalAppPath = Join-Path $ScriptsPath 'RegistryEditorThunderLauncher.exe'
     Remove-Item $BinPath -Force -Recurse | Out-Null
     New-Item -Path $BinPath -ItemType Directory -Force | Out-Null
     Write-ChannelMessage  "RootPath $RootPath"
