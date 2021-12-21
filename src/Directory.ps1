@@ -725,10 +725,11 @@ function Remove-DirectoryTree
 
 } 
 
-function AutoUpdateProgress {   # NOEXPORT
+function Directory-AutoUpdateProgress {   # NOEXPORT
     $Len = $Global:ServiceName.Length
+
     $Diff = 50 - $Len
-    For($i = 0 ; $i -lt $Diff ; $i++){ $Global:Channel += '.'}
+    For($i = 0 ; $i -lt $Diff ; $i++){ [string]$Global:Channel = "$Global:Channel" + "." ;}
     $Global:ProgressMessage = "$Global:Channel... ( $Global:StepNumber on $Global:TotalSteps)"
     Write-Progress -Activity $Global:ProgressTitle -Status $Global:ProgressMessage -PercentComplete (($Global:StepNumber / $Global:TotalSteps) * 100)
 
@@ -765,7 +766,14 @@ function Remove-DirectoryBinaries
     $numFolders=0
     $erroroccured=$false
     pushd $Path
-    $List = (dir .\* -include ('*.obj', '*.exe', '*.dll', '*.pdb') -recurse) 
+    
+    [array]$List = (dir .\* -include ('*.obj', '*.exe', '*.dll', '*.pdb') -recurse) 
+    if($List -eq $Null){
+        Write-Host "[BIN DELETE] " -f Blue -NoNewLine
+        Write-Host "Nothing to delete..." -f Gray
+        return
+    }
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     $Global:ProgressTitle = 'BIN CLEANUP'
     $Global:StepNumber = 0
     $Global:TotalSteps = $List.Count
@@ -780,11 +788,13 @@ function Remove-DirectoryBinaries
         }catch{
              $Global:ErrorCount++
         }
-        AutoUpdateProgress
+        Directory-AutoUpdateProgress
         
        
     }
 
+    [int]$elapsedSeconds = $stopwatch.Elapsed.Seconds
+    $stopwatch.Stop()
     Write-Host "[BIN DELETE] " -f Blue -NoNewLine
     Write-Host "COMPLETED IN $elapsedSeconds seconds" -f Gray
     Write-Host "[BIN DELETE] " -f Blue -NoNewLine

@@ -20,6 +20,51 @@
 #>
 
 
+function Convert-ToPreCompiledScript {
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param
+    (
+        [Parameter(Mandatory=$true,Position=0)]
+        [ValidateScript({
+            if(-Not ($_ | Test-Path) ){
+                throw "File or folder does not exist"
+            }
+            if(-Not ($_ | Test-Path -PathType Leaf) ){
+                throw "The Path argument must be a file. Directory paths are not allowed."
+            }
+            return $true 
+        })]        
+        [string]$InputScript,
+        [Parameter(Mandatory=$false)]
+        [string]$OutputScript,
+        [Parameter(Mandatory=$false)]
+        [string]$Raw
+    )
+
+    $Content = Get-Content -Path $InputScript -Raw
+    $CompressedContent = Convert-ToBase64CompressedScriptBlock $Content
+    if($Raw){
+        return $CompressedContent
+    }
+    $StringDecl = '$ScriptString = "' + $CompressedContent + '"'
+    if($PSBoundParameters.ContainsKey("OutputScript")){
+        if(Test-Path $OutputScript) { 
+            write-host "[Warning] " -f DarkRed -NoNewLine ; 
+            write-host "File $OutputScript already exists... " -f DarkYellow -n
+            $a=Read-Host -Prompt "Overwrite (y/N)?" ; 
+            if($a -notmatch "y") {
+                return;
+            }
+             
+        }
+        Set-Content -Path $OutputScript -Value "`n`n$StringDecl`n"
+    }else{
+        return $StringDecl
+    }
+    return ""
+}
+
 
 
 function Convert-ToBase64CompressedScriptBlock {
