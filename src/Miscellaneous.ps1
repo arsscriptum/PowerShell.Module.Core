@@ -693,3 +693,81 @@ function Get-SHA512Hash
     return [System.BitConverter]::ToString($sha512.ComputeHash($utf8.GetBytes($PlainText))) -replace '-', ''
 }
 
+
+function Invoke-CommandForEach{
+[CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,Position=0)]
+        [ValidateNotNullOrEmpty()]
+        [String]$Command,
+        [Parameter(Mandatory=$false)]
+        [array]$ArgumentList, 
+        [Parameter(Mandatory=$false)]
+        [String]$Path, 
+        #[Parameter(Mandatory=$true)]
+        #[ValidateSet('Directory', 'File')]
+        #[String]$Type,
+        [Parameter(Mandatory=$false)]
+        [ValidateSet('Single', 'Multiple')]
+        [String]$InstanceMode,        
+        [Parameter(Mandatory=$false)]
+        [switch]$Recurse
+    )
+
+    if (($PSBoundParameters.ContainsKey('Path'))  -eq $False ) {
+        $Path = $PSScriptRoot
+    }
+
+    Write-Verbose "Invoke-CommandForEach $Type Path: $Path Recurse: $Recurse"
+    Write-Verbose " Command $Command"
+    $Objects=(gci -Path $Path -Recurse:$Recurse -File).Fullname
+
+    if($Objects -eq $Null) { throw "INVALID OBJECT SET"; return }
+    $ObjectsCount=$Objects.Count
+    Write-Verbose "Found $ObjectsCount Objects"
+
+    if (($PSBoundParameters.ContainsKey('InstanceMode'))  -eq $False ) {
+        $InstanceMode = 'Multiple'
+    }
+
+    Write-Verbose "Invoke-CommandForEach InstanceMode $InstanceMode"
+    $CommandArgs = [System.Collections.ArrayList]::new()
+    if($InstanceMode -eq 'Multiple'){
+        $Objects.ForEach({
+            $ObjPath = $_
+            $CommandArgs = [System.Collections.ArrayList]::new()
+            $Null = $CommandArgs.Add("$ObjPath")
+            $startProcessParams = @{
+                FilePath               = $Command
+                Wait                   = $true
+                PassThru               = $true
+                NoNewWindow            = $true
+                WorkingDirectory       = $PSScriptRoot
+                ArgumentList           = $CommandArgs
+            }
+
+            $cmdExitCode    = 0
+            $cmdId          = 0 
+            $cmdName        = ''
+            
+            Write-Verbose " Start-Process $FilePath $ArgumentList"
+            #$cmd = Start-Process @startProcessParams | Out-null
+            $cmdExitCode = $cmd.ExitCode
+            $cmdId = $cmd.Id 
+            $cmdName=$cmd.Name 
+            Write-Verbose -Message "ExitCode $cmdExitCode"
+        })
+    }elseif($InstanceMode -eq 'Single'){
+        $Objects.ForEach({
+            $ObjPath = $_
+            $CommandArgs.Add("$ObjPath")
+        })
+        Write-Verbose " Start-Process $FilePath $ArgumentList"
+        $cmd = Start-Process @startProcessParams | Out-null
+        $cmdExitCode = $cmd.ExitCode
+        $cmdId = $cmd.Id 
+        $cmdName=$cmd.Name 
+        Write-Verbose -Message "ExitCode $cmdExitCode"        
+    }
+}

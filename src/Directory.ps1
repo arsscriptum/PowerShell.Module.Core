@@ -666,6 +666,15 @@ function Remove-DirectoryTree
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
+        [ValidateScript({
+            if(-Not ($_ | Test-Path) ){
+                throw "File or folder does not exist"
+            }
+            if(-Not ($_ | Test-Path -PathType Container) ){
+                throw "The Path argument must be a Directory. Files paths are not allowed."
+            }
+            return $true 
+        })]        
         [String]$Path,
         [Parameter(Mandatory=$false)]
         [switch]$Force,
