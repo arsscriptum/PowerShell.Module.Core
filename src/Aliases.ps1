@@ -27,6 +27,9 @@ New-Alias -Name getdir -Value Get-DirectoryItem -Scope Global -ErrorAction Ignor
 New-Alias -Name rsync -Value Sync-Directories -Scope Global -ErrorAction Ignore
 New-Alias -Name dirdiff -Value Compare-Directories -Scope Global -ErrorAction Ignore
 New-Alias -Name dircomp -Value Compare-Directories -Scope Global -ErrorAction Ignore
+New-Alias -Name foreachdir -Value Invoke-ForEachChilds -Scope Global -ErrorAction Ignore
+
+
 #===============================================================================
 # Credential.ps1
 #===============================================================================

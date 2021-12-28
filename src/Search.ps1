@@ -34,8 +34,8 @@ function Search-Item{
 
     $ResultsNum = 0
     $Results = [System.Collections.ArrayList]::new()
-    $timetaken = Measure-Command -Expression { gci -Path $Path -Recurse:$Recurse | % { $Location = $_.Fullname ; $Name = $_.Name; $Full = $_.Fullname ; 
-        if(($Full -like $String)-Or($Full -match $String)){
+    $timetaken = Measure-Command -Expression { gci -Path $Path -Recurse:$Recurse -File | % { $Location = $_.Fullname ; $Name = $_.Name; $Full = $_.Fullname ; 
+        if(($Location -match $String)-Or($Name -match $String)){
             $HighlightedName = ($Name | Select-String -Pattern $String -SimpleMatch); # TODO : This is a string with the pattern highlighted, but it will not show up in Format-Table
             $ResultsNum = $ResultsNum + 1
             $Details = New-Object PSObject -Property @{

@@ -14,6 +14,37 @@ Function ShouldCreateFolder($Folder){
     return ($rslt -eq 0)
 }
 
+function Invoke-ForEachChilds
+{
+<#
+    .SYNOPSIS
+            Cmdlet to find in files (grep)
+    .DESCRIPTION
+            Cmdlet to find in files (grep)
+    .PARAMETER Path
+
+#>
+
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$True,Position=0)]
+        [string]$Command
+    ) 
+    
+    $CurrentPath = ( Get-Location ).Path
+    $Childs = (gci -Path $CurrentPath -Directory).Fullname
+    $Childs.ForEach({
+        $Dir = $_
+        pushd $Dir
+        &"$Command"
+        popd
+
+        })
+
+}
+
+
 function New-Directory
 {
 <#
@@ -718,7 +749,7 @@ function Remove-DirectoryTree
                 Write-Host "$path"    
                 $NumDeleted++                
             }else{
-                Remove-Item -Path "$path" -Force -ErrorAction Stop    
+                Remove-Item -Path "$path" -Recurse -Force -ErrorAction Stop    
                 $NumDeleted++
             }
 
