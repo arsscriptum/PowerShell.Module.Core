@@ -5,6 +5,46 @@
 
 
 
+function Export-RegistryItem{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$RegistryPath,
+        [Parameter(Mandatory = $true, Position=1)]
+        [String]$BackupFile     
+    )
+    $RegExe = (Get-Command reg.exe).Source
+
+
+    Write-Host "===============================================================================" -f DarkRed
+    Write-Host "SAVING REGISTRY VALUES FROM $RegistryPath" -f DarkYellow;
+    Write-Host "===============================================================================" -f DarkRed    
+    Write-Host "Registry Path     `t" -NoNewLine -f DarkYellow ; Write-Host "$RegistryPath" -f Gray 
+    Write-Host "BackupFile   `t" -NoNewLine -f DarkYellow;  Write-Host "$BackupFile" -f Gray 
+
+    $Result=&"$RegExe" EXPORT "$RegistryPath" "$BackupFile" /y
+
+    if($Result -eq 'The operation completed successfully.'){
+        Write-Host "SUCCESS `t" -NoNewLine -f DarkGreen;  Write-Host " Saved in $BackupFile" -f Gray 
+        $NowStr =  (get-date).GetDateTimeFormats()[12]
+        $Content = Get-Content -Path $BackupFile -Raw
+        $NewContent = @"
+    ;;==============================================================================`
+    ;;
+    ;;  $RegistryPath 
+    ;;  EXPORTED ON $NowStr
+    ;;==============================================================================
+    ;;  Ars Scriptum - made in quebec 2020 <guillaumeplante.qc>
+    ;;==============================================================================
+"@
+
+        $NewContent += $Content
+        Set-Content -Path $BackupFile -Value $NewContent
+    }
+}
+
+
 function Test-RegistryValue
 {
 <#
