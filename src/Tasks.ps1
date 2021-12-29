@@ -75,18 +75,30 @@ function Install-SimpleTask {
     $settings = New-ScheduledTaskSettingsSet -Hidden -Priority 3
     $principal = New-ScheduledTaskPrincipal -UserID "$User"
     #$principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-    $Res
     if($EncodeB64){
         $command = Get-Content -Path $ScriptPath -Raw
         $bytes = [System.Text.Encoding]::Unicode.GetBytes($command)
         $encodedCommand = [Convert]::ToBase64String($bytes)
         $action = New-ScheduledTaskAction -Execute "$PWSHEXE" -Argument "-ep Bypass -nop -W Hidden -NonI -EncodedCommand `"$encodedCommand`""
         $task = New-ScheduledTask -Action $action -Principal $principal -Trigger $trigger -Settings $settings
-        $Res=Register-ScheduledTask $Id -InputObject $task
+        $ResultingTask = Register-ScheduledTask $Id -InputObject $task
+
+
+        $T_State = ($ResultingTask).State
+        $T_Name = ($ResultingTask).TaskName
+
+        Write-Host "[SCHEDULED TASK] " -f DarkYellow -n
+        Write-Host "Name ==> $T_Name. State ==> $T_State" -DarkGreen
     }else{
         $action = New-ScheduledTaskAction -Execute "$PWSHEXE" -Argument "-ep Bypass -nop -W Hidden -NonI -File `"$ScriptPath`""
         $task = New-ScheduledTask -Action $action -Principal $principal -Trigger $trigger -Settings $settings
-        $Res=Register-ScheduledTask $Id -InputObject $task
+        $ResultingTask=Register-ScheduledTask $Id -InputObject $task
+
+
+        $T_State = ($ResultingTask).State
+        $T_Name = ($ResultingTask).TaskName
+
+        Write-Host "[SCHEDULED TASK] " -f DarkYellow -n
+        Write-Host "Name ==> $T_Name. State ==> $T_State" -DarkGreen
     }
-    return $Res
 }
