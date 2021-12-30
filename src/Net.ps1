@@ -22,7 +22,7 @@ function Resolve-IPAddress{
         $ip   = $Result.DisplayAddress
         $dest = $Result.Destination
 
-        Write-verbose "[success]  $ipaddress ($destination)" 
+        Write-verbose "[success]  $ip ($dest)" 
 
         if($PSBoundParameters.ContainsKey('HostEntries') -eq $True){
             Write-verbose "[HostEntries]  updating  HostEntries" 
