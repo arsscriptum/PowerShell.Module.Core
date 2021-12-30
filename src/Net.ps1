@@ -3,6 +3,15 @@
 #̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
 #>
 
+<#
+EXAMPLE: 
+$Hosts = @{}
+Resolve-IPAddress 'security.ubuntu.com' -HostEntries $Hosts
+Resolve-IPAddress 'archive.ubuntu.com' -HostEntries $Hosts
+
+New-HostsFileFromHashTable  -Path "$pwd\h.txt" -HostEntries $Hosts
+
+#>
 
 
 function Resolve-IPAddress{
@@ -33,3 +42,25 @@ function Resolve-IPAddress{
     return ''
 }
 
+function New-HostsFileFromHashTable{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$true,Position=0)]
+        [string]$Path,
+        [Parameter(Mandatory=$false)]
+        [Hashtable]$HostEntries
+    )   
+    $Lines = [System.Collections.ArrayList]::new()
+    $HostEntries.GetEnumerator() | ForEach-Object {
+        $h = $($_.Key)
+        $ip = $($_.Value)
+        $entry = "{0}\t{1}" -f $h, $ip
+        $Lines.Add($entry)
+    }
+
+    $HostsFilePath = "$pwd\HOSTS"
+    Set-Content -Path $Path -Value $Lines
+
+    write-host "$Path"
+}
