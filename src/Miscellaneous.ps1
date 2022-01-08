@@ -771,3 +771,13 @@ function Invoke-CommandForEach{
         Write-Verbose -Message "ExitCode $cmdExitCode"        
     }
 }
+
+
+function New-FunctionDemoForAlexForHimself{
+
+    Write-Host -f DarkBlue -n "[NEW FUNCTION ALEX] "
+    Write-Host -f DarkYellow " Bla Bla"
+
+    Write-Host "A FIX" -f DarkYellow
+
+}

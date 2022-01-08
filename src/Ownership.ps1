@@ -5,6 +5,47 @@
 #>
  
 
+function Get-PrivStatus{
+
+<#
+    .SYNOPSIS
+    Get the status of a Privilege for the user
+
+    .DESCRIPTION
+    Get the status of a Privilege for the user using whoami
+
+    .PARAMETER Privilege
+    The Privilege term to query
+
+   
+    .EXAMPLE 
+       Get-PrivStatus -Privilege "SeSecurityPrivilege"
+
+
+
+#>
+
+
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,Position=0)]
+        [string]$Privilege
+    )  
+
+    try{
+        $WAMEXE = (get-command whoami.exe).Source
+
+        $Res = &"$WAMEXE" /priv | Select-String "$Privilege" -Raw
+        $Status = $Res.substring($Res.length-10).Trim()
+
+        return $Status  
+    }
+    catch{
+         Show-ExceptionDetails $_
+    }
+}
+
 function Set-Owner {
 
 <#
@@ -29,7 +70,7 @@ function Set-Owner {
 #>
 
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         [ValidateScript({
@@ -41,21 +82,53 @@ function Set-Owner {
         [Parameter(Mandatory=$true,Position=0)]
         [string]$Path,
         [Parameter(Mandatory=$true)]
-        [System.Security.Principal.IdentityReference]$Principal
+        [System.Security.Principal.IdentityReference]$Principal,
+        [Parameter(Mandatory=$false)]
+        [switch]$AddPrivileges
     )  
 
+    Write-Verbose "ErrorActionPreference is $ErrorActionPreference"
     $errPref = $ErrorActionPreference
     $ErrorActionPreference= "silentlycontinue"
     $type = [TokenManipulator]
     $ErrorActionPreference = $errPref
+    Write-Verbose "setting ErrorActionPreference to $errPref"
+    Write-Verbose "Loading TokenManipulator"
     if($type -eq $null){
         throw "NO TYPE TokenManipulator registered"
+        Write-Verbose "NO TYPE TokenManipulator registered"
     }
+
+    if($AddPrivileges){
+        $Privilege = "SeRestorePrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow  
+        $Privilege = "SeBackupPrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow  
+        $Privilege = "SeTakeOwnershipPrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow  
+        Write-Verbose "AddPrivilege SeRestorePrivilege"
+        [void][TokenManipulator]::AddPrivilege("SeRestorePrivilege")
+        Write-Verbose "AddPrivilege SeBackupPrivilege"
+        [void][TokenManipulator]::AddPrivilege("SeBackupPrivilege")
+        Write-Verbose "AddPrivilege SeTakeOwnershipPrivilege"
+        [void][TokenManipulator]::AddPrivilege("SeTakeOwnershipPrivilege")    
+
+        $Privilege = "SeRestorePrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow  
+        $Privilege = "SeBackupPrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow  
+        $Privilege = "SeTakeOwnershipPrivilege" ;  $Status = Get-PrivStatus $Privilege ; Write-Host "[$Privilege] " -f DarkRed -n ; Write-Host "$Status" -f DarkYellow          
+    }
+    
+    Write-Verbose "Get-Acl $Path"
     $acl = Get-Acl $Path
+
+    Write-Verbose "SetOwner($Principal)"
     $acl.psbase.SetOwner($Principal)
-    [void][TokenManipulator]::AddPrivilege("SeRestorePrivilege")
+
     set-acl -Path $Path -AclObject $acl -passthru
-    [void][TokenManipulator]::RemovePrivilege("SeRestorePrivilege")
+
+    if($AddPrivileges){
+        [void][TokenManipulator]::RemovePrivilege("SeRestorePrivilege")
+        [void][TokenManipulator]::RemovePrivilege("SeBackupPrivilege")
+        [void][TokenManipulator]::RemovePrivilege("SeTakeOwnershipPrivilege")    
+    }
+
 }
 
 
@@ -83,7 +156,7 @@ function Set-OwnerU {
 #>
 
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         [ValidateScript({

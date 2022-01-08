@@ -643,6 +643,9 @@ function Get-DirectoryTree {
     }
     $null=$Tree.Add($obj)    
 
+    $BackupErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Stop"
+
     try{
         If( $PSBoundParameters.ContainsKey('Exclude') -eq $True ){
             $DirList = (Get-ChildItem $Path -Recurse -ErrorAction Ignore -Directory) 
@@ -676,9 +679,11 @@ function Get-DirectoryTree {
         })
         return $Tree
     }catch {
-        Show-ExceptionDetails($_) -ShowStack
+        Write-Host "[Get-DirectoryTree] " -n -f DarkRed
+        Write-Host "Not found" -f DarkYellow
     }
 
+    $ErrorActionPreference = $BackupErrorActionPreference
 } 
 
 
