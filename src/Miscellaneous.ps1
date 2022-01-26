@@ -20,6 +20,29 @@ class ChannelProperties
 }
 $Global:ChannelProps = [ChannelProperties]::new()
 
+     
+        
+
+function Get-CommandSource{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage="Command Name (like cl.exe or LiveTcpUdpWatch.exe)")]
+        [string]$Name
+    ) 
+     
+    $Res = Get-Command $Name -ErrorAction Ignore
+    if($Res){
+        $Source = $Res.Source
+        Write-Host "𝙋𝙖𝙩𝙝`t==>`t" -NoNewLine -ForegroundColor DarkYellow
+        Write-Host "$Source" -ForegroundColor DarkGreen
+        return
+    }
+    Write-Host "𝙋𝙖𝙩𝙝`t==>`t" -NoNewLine -ForegroundColor DarkYellow
+    Write-Host "[NULL]" -ForegroundColor DarkRed
+}
+
+
 function Rename-FilesInFolder{
     [CmdletBinding(SupportsShouldProcess)]
     Param

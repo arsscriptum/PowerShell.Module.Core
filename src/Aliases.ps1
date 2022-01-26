@@ -47,6 +47,11 @@ New-Alias -Name Get-AdminCreds -Value Get-ElevatedCredential -Scope Global -Erro
 New-Alias -Name msgbox -Value Show-MessageBox -Scope Global -ErrorAction Ignore
 
 #===============================================================================
+# Miscellaneous.ps1
+#===============================================================================
+New-Alias -Name cm -Value Get-CommandSource -Scope Global -ErrorAction Ignore
+
+#===============================================================================
 # Module.ps1
 #===============================================================================
 New-Alias -Name import -Value Import-CustomModule -Scope Global -ErrorAction Ignore -Description 'Import a Powershell Module very easily'
@@ -82,6 +87,4 @@ New-Alias -Name ws -Value Invoke-WebSearch -Description "search the web, 's 'Sta
 
 
 New-Alias -Name parserepourl -value Split-RepositoryUrl
-
-
 New-Alias -Name parseurl -value Split-Url

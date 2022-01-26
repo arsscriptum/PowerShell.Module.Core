@@ -3,6 +3,8 @@
 #̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
 #>
 
+
+
 function Search-Item{
 
     # Define Parameters
@@ -34,15 +36,16 @@ function Search-Item{
 
     $ResultsNum = 0
     $Results = [System.Collections.ArrayList]::new()
-    $timetaken = Measure-Command -Expression { gci -Path $Path -Recurse:$Recurse -File | % { $Location = $_.Fullname ; $Name = $_.Name; $Full = $_.Fullname ; 
+    $timetaken = Measure-Command -Expression { gci -Path $Path -Recurse:$Recurse | % { $Location = $_.Fullname ; $Name = $_.Name; $Full = $_.Fullname ; $Length = $_.Length ; 
         if(($Location -match $String)-Or($Name -match $String)){
             $HighlightedName = ($Name | Select-String -Pattern $String -SimpleMatch); # TODO : This is a string with the pattern highlighted, but it will not show up in Format-Table
             $ResultsNum = $ResultsNum + 1
             $Details = New-Object PSObject -Property @{
                 Name = $HighlightedName
                 Location = $Location
+                Length = $Length
             }
-        $null=$Results.Add($Details)
+            $null=$Results.Add($Details)
         }
     }
     if($ResultsNum -eq 0){
@@ -50,9 +53,92 @@ function Search-Item{
         return
     }}
 
+    $Sum = $Results | measure-object -property Length -sum
     $TimeSec = $timetaken.TotalSeconds
     $TimeMS = $timetaken.TotalMilliseconds
     Write-Host "`nSearch-Item " -NoNewLine -f White
+    Write-Host "Found $ResultsNum matches in $TimeSec,$TimeMS s`n" -f DarkGray -NoNewLine
+
+    $Results | Format-Table -Autosize
+    Write-Host "`n"
+} 
+
+
+
+function Search-Files{
+
+    # Define Parameters
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$True,Position=0)]
+        [string]$String,
+        [Parameter(Mandatory=$False,Position=1)]
+        [string]$Path="",
+        [Parameter(Mandatory=$False)]
+        [switch]$Recurse,
+        [Parameter(Mandatory=$false)]
+        [switch]$Quiet
+    )   
+
+
+    if($Path -eq ""){
+        $Path = (Get-Location).Path
+    }elseif(-not(Test-Path -Path $Path -PathType Container)){ 
+        throw "Invalid Path specified."
+    }
+    if($Quiet -ne $true){
+        Write-Host "Search-Files " -NoNewLine -f White
+        Write-Host "Search for a name matching " -f DarkGray -NoNewLine
+        Write-Host "$String.`n" -f Gray        
+    }
+
+
+    $ResultsNum = 0
+    $Results = [System.Collections.ArrayList]::new()
+    try{
+    $timetaken = Measure-Command -Expression { gci -Path $Path -Recurse:$Recurse -File -ErrorAction Stop | % { $Location = $_.Fullname ; $Name = $_.Name; $Full = $_.Fullname ; $Length = $_.Length ; 
+        if(($Location -match $String)-Or($Name -match $String)){
+            $HighlightedName = ($Name | Select-String -Pattern $String -SimpleMatch); # TODO : This is a string with the pattern highlighted, but it will not show up in Format-Table
+            $ResultsNum = $ResultsNum + 1
+            $Details = New-Object PSObject -Property @{
+                Name = $HighlightedName
+                Location = $Location
+                Length = $Length
+            }
+            $null=$Results.Add($Details)
+        }
+    }
+    if($ResultsNum -eq 0){
+        Write-Host "No matches found`n`n"
+        return
+    }}
+    }catch
+    { 
+        Write-Host "[ERROR] " -n -f DarkRed ; Write-Host "$_" -f DarkYellow ; 
+    }
+    $count = $Results.count
+    $sum = $Results | measure-object -property Length -sum
+    if($sum.sum -ge 1073741824)
+        {
+        $totalGB = [math]::round($sum.sum/1073741824, 2)
+        write-Host "$count files using a total of $totalGB GB"  -f DarkRed
+        }
+    elseif(($sum.sum -ge 1048576) -and ($sum.sum -lt 1073741824))
+        {
+        $totalMB = [math]::round($sum.sum/1048576, 2)
+        write-Host "$count files using a total of $totalMB MB" -f DarkYellow 
+        }
+    elseif($sum.sum -lt 1048576)
+        {
+        $totalKB = [math]::round($sum.sum/1024, 2)
+        write-Host "$count files using a total of $totalKB KB"  -f DarkYellow 
+        }
+    
+    $TimeSec = $timetaken.TotalSeconds
+    $TimeMS = $timetaken.TotalMilliseconds
+    Write-Host "`nSearch-Item " -NoNewLine -f White
+    Write-Host "Total Size $Sum" -f DarkGray -NoNewLine
     Write-Host "Found $ResultsNum matches in $TimeSec,$TimeMS s`n" -f DarkGray -NoNewLine
 
     $Results | Format-Table -Autosize
@@ -103,12 +189,8 @@ Param
     [Object]$Pattern,
 
     [Parameter(Mandatory=$false)]
-    [Alias('t')]
-    [string]$FileType,
-
-    [Parameter(Mandatory=$false)]
-    [Alias('f')]
-    [string]$Filter,
+    [Alias('e')]
+    [string]$Extension,
 
     [Parameter(Mandatory=$false)]
     [Alias('p')]
@@ -116,10 +198,7 @@ Param
 
     [Parameter(Mandatory=$false)]
     [Alias('r')]
-    [switch]$Recurse=$true,
-    # Code to run on file find
-    [Parameter(Mandatory=$false)]
-    [scriptblock]$OnFind
+    [switch]$Recurse=$true
 
 )   
 
@@ -130,12 +209,9 @@ Param
         $Path = (Get-Location).Path
     }
 
-    if($Filter -ne $null -And $Filter.Length -gt 0){
-        Write-Host "  Using filter: $Filter" -f DarkGreen
-    }
-    if($FileType -ne $null -And $FileType.Length -gt 0){
-        $Filter = '*.' + $FileType
-        Write-Host "  Using filter from file types: $Filter" -f DarkGreen
+    if($Extension -ne $null -And $Extension.Length -gt 0){
+        $Filter = '*.' + $Extension
+        Write-Host "  Using Extension filter: $Filter" -f DarkGreen
     }
 
     if($Recurse)
