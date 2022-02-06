@@ -209,6 +209,7 @@ Param
         $Path = (Get-Location).Path
     }
 
+    $Filter = '*.*'
     if($Extension -ne $null -And $Extension.Length -gt 0){
         $Filter = '*.' + $Extension
         Write-Host "  Using Extension filter: $Filter" -f DarkGreen

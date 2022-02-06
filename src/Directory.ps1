@@ -726,7 +726,7 @@ function Remove-DirectoryTree
         $GitDir = (gci -Path $Path -Directory  -Attributes Hidden | where Name -eq '.git')
         if($GitDir -ne $Null){ write-host "Warning: GIT REPO!" -f Red -b DarkYellow -NoNewLine ; $a=Read-Host -Prompt "$Path is a GIT repo! Are you sure (y/N)?" ; if($a -notmatch "y") {return;}  }
 
-        $ExcludedPaths = (Get-ChildItem -Path 'C:\' -Depth 1 -Directory)
+        $ExcludedPaths = (Get-ChildItem -Path 'C:\' -Depth 1 -Directory  -ErrorAction Ignore  )
         if($ExcludedPaths){
             $ExcludedNames = $ExcludedPaths.Fullname
             if( $ExcludedNames.Contains($Path) -eq $True ){
@@ -754,7 +754,7 @@ function Remove-DirectoryTree
                 Write-Host "$path"    
                 $NumDeleted++                
             }else{
-                Remove-Item -Path "$path" -Recurse -Force -ErrorAction Stop    
+                Remove-Item -Path "$path" -Recurse -Force -ErrorAction Ignore    
                 $NumDeleted++
             }
 

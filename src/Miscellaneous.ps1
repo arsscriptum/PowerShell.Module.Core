@@ -1,26 +1,13 @@
-
 <#
-#̷\   ⼕龱ᗪ㠪⼕闩丂ㄒ龱尺 ᗪ㠪ᐯ㠪㇄龱尸爪㠪𝓝ㄒ
-#̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
-#>
+  ╓──────────────────────────────────────────────────────────────────────────────────────
+  ║   PowerShell.Module.WindowsHosts
+  ║   𝑊𝑖𝑛𝑑𝑜𝑤𝑠 𝐻𝑂𝑆𝑇𝑆 𝑓𝑖𝑙𝑒 𝑚𝑎𝑛𝑎𝑔𝑒𝑚𝑒𝑛𝑡              
+  ║   
+  ║   miscelaneous.ps1: misc functs
+  ╙──────────────────────────────────────────────────────────────────────────────────────
+ #>
 
-#===============================================================================
-# ChannelProperties
-#===============================================================================
 
-class ChannelProperties
-{
-    #ChannelProperties
-    [string]$Channel = 'Core'
-    [ConsoleColor]$TitleColor = 'Blue'
-    [ConsoleColor]$MessageColor = 'DarkGray'
-    [ConsoleColor]$ErrorColor = 'DarkRed'
-    [ConsoleColor]$SuccessColor = 'DarkGreen'
-    [ConsoleColor]$ErrorDescriptionColor = 'DarkYellow'
-}
-$Global:ChannelProps = [ChannelProperties]::new()
-
-     
         
 
 function Get-CommandSource{
@@ -356,54 +343,6 @@ function Get-AllColors{
     param()
 
     [System.ConsoleColor].GetFields() | %{$_.Name}
-}
-
-
-
-function Write-ChannelMessage{               # NOEXPORT   
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message        
-    )
-
-    Write-Host "[$($Global:ChannelProps.Channel)] " -f $($Global:ChannelProps.TitleColor) -NoNewLine
-    Write-Host "$Message" -f $($Global:ChannelProps.MessageColor)
-}
-
-
-function Write-ChannelResult{                        # NOEXPORT        
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message,
-        [switch]$Warning
-    )
-
-    if($Warning -eq $False){
-        Write-Host "[$($Global:ChannelProps.Channel)] " -f $($Global:ChannelProps.TitleColor) -NoNewLine
-        Write-Host "[ OK ] " -f $($Global:ChannelProps.SuccessColor) -NoNewLine
-    }else{
-        Write-Host "[WARN] " -f $($Global:ChannelProps.ErrorColor) -NoNewLine
-    }
-    
-    Write-Host "$Message" -f $($Global:ChannelProps.MessageColor)
-}
-
-
-
-function Write-ChannelError{                # NOEXPORT                 
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true)]
-        [System.Management.Automation.ErrorRecord]$Record
-    )
-    $formatstring = "{0}`n{1}"
-    $fields = $Record.FullyQualifiedErrorId,$Record.Exception.ToString()
-    $ExceptMsg=($formatstring -f $fields)
-    Write-Host "[$($Global:ChannelProps.Channel)] " -f $($Global:ChannelProps.TitleColor) -NoNewLine
-    Write-Host "[ERROR] " -f $($Global:ChannelProps.ErrorColor) -NoNewLine
-    Write-Host "$ExceptMsg`n`n" -ForegroundColor DarkYellow
 }
 
 
