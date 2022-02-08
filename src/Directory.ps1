@@ -648,13 +648,10 @@ function Get-DirectoryTree {
 
     try{
         If( $PSBoundParameters.ContainsKey('Exclude') -eq $True ){
-            $DirList = (Get-ChildItem $Path -Recurse -ErrorAction Ignore -Directory) 
-            if($DirList -eq $Null){
-                return $Tree
-            }
+
             $DirList = Get-ChildItem $Path -Recurse -ErrorAction Ignore -Directory | where Fullname -notmatch "$Exclude"
             if($DirList -eq $Null){
-                return $Tree
+                return $null
             }
 
             $DirList = $DirList | sort -Descending -unique
@@ -666,7 +663,7 @@ function Get-DirectoryTree {
             }
             $DirList = $DirList.Fullname | sort -Descending -unique
         }
-        $len = $Path.Length
+        $len = $DirList.Length
         
         $DirList.ForEach({
             $fn = $_
