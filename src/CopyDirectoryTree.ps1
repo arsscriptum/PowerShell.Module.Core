@@ -90,6 +90,7 @@ function Copy-DirectoryTree {
             }
             $null=$Tree.Add($obj)
         }
+        return $Tree
     }catch {
         Show-ExceptionDetails $_ -ShowStack
         Write-Host "[Copy-DirectoryTree error] " -n -f DarkRed
@@ -97,7 +98,7 @@ function Copy-DirectoryTree {
     }
     finally{
         popd
-        return $Tree
+        
     }
 } 
 
