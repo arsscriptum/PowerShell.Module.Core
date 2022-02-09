@@ -21,6 +21,7 @@ class ChannelProperties
     [string]$Channel = 'Core'
     [ConsoleColor]$TitleColor = 'Blue'
     [ConsoleColor]$NormalTextColor = 'DarkGray'
+    [ConsoleColor]$MessageColor = 'DarkGray'
     [ConsoleColor]$InfoColor = 'DarkCyan'
     [ConsoleColor]$WarnColor = 'DarkYellow'
     [ConsoleColor]$ErrorColor = 'DarkRed'

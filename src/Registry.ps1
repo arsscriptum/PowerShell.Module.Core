@@ -1,16 +1,18 @@
 <#
-#̷\   ⼕龱ᗪ㠪⼕闩丂ㄒ龱尺 ᗪ㠪ᐯ㠪㇄龱尸爪㠪𝓝ㄒ
-#̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
-#>
-
-
+  ╓──────────────────────────────────────────────────────────────────────────────────────
+  ║   PowerShell.Module.WindowsHosts
+  ║   𝑊𝑖𝑛𝑑𝑜𝑤𝑠 𝐻𝑂𝑆𝑇𝑆 𝑓𝑖𝑙𝑒 𝑚𝑎𝑛𝑎𝑔𝑒𝑚𝑒𝑛𝑡              
+  ║   
+  ║   miscelaneous.ps1: misc functs
+  ╙──────────────────────────────────────────────────────────────────────────────────────
+ #>
 
 function Export-RegistryItem{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         [Parameter(Mandatory = $true, Position=0)]
-        [String]$RegistryPath,
+        [String]$Path,
         [Parameter(Mandatory = $true, Position=1)]
         [String]$BackupFile     
     )
@@ -18,12 +20,12 @@ function Export-RegistryItem{
 
 
     Write-Host "===============================================================================" -f DarkRed
-    Write-Host "SAVING REGISTRY VALUES FROM $RegistryPath" -f DarkYellow;
+    Write-Host "SAVING REGISTRY VALUES FROM $Path" -f DarkYellow;
     Write-Host "===============================================================================" -f DarkRed    
-    Write-Host "Registry Path     `t" -NoNewLine -f DarkYellow ; Write-Host "$RegistryPath" -f Gray 
+    Write-Host "Registry Path     `t" -NoNewLine -f DarkYellow ; Write-Host "$Path" -f Gray 
     Write-Host "BackupFile   `t" -NoNewLine -f DarkYellow;  Write-Host "$BackupFile" -f Gray 
 
-    $Result=&"$RegExe" EXPORT "$RegistryPath" "$BackupFile" /y
+    $Result=&"$RegExe" EXPORT "$Path" "$BackupFile" /y
 
     if($Result -eq 'The operation completed successfully.'){
         Write-Host "SUCCESS `t" -NoNewLine -f DarkGreen;  Write-Host " Saved in $BackupFile" -f Gray 
@@ -32,7 +34,7 @@ function Export-RegistryItem{
         $NewContent = @"
     ;;==============================================================================`
     ;;
-    ;;  $RegistryPath 
+    ;;  $Path 
     ;;  EXPORTED ON $NowStr
     ;;==============================================================================
     ;;  Ars Scriptum - made in quebec 2020 <guillaumeplante.qc>
@@ -61,22 +63,23 @@ function Test-RegistryValue
     .Outputs
     None
     .Example
-    Reg-Test-Value "$ENV:OrganizationHKLM\reddit-pwsh-script" "AccessToken"
+    Test-RegistryValue "$ENV:OrganizationHKLM\reddit-pwsh-script" "AccessToken"
     >> TRUE
 
 #>
     param (
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Path,
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Entry
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory = $true, Position=1)]
+        [Alias('Entry')]
+        [ValidateNotNullOrEmpty()]$Name
     )
 
     if(-not(Test-Path $Path)){
         return $false
     }
     try {
-        Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Entry -ErrorAction Stop | Out-Null
+        Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Name -ErrorAction Stop | Out-Null
         return $true
     }
 
@@ -109,17 +112,18 @@ function Get-RegistryValue
 
 #>
     param (
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Path,
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Entry
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory = $true, Position=1)]
+        [Alias('Entry')]
+        [string]$Name
     )
 
     if(-not(Test-Path $Path)){
         return $null
     }
     try {
-        $Result=(Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Entry)
+        $Result=(Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Name)
         return $Result
     }
 
@@ -155,12 +159,13 @@ function Set-RegistryValue
 
 #>
     param (
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Path,
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Name,
-     [parameter(Mandatory=$true)]
-     [ValidateNotNullOrEmpty()]$Value
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory = $true, Position=1)]
+        [Alias('Entry')]
+        [String]$Name,
+        [parameter(Mandatory=$true, Position=2)]
+        [String]$Value
     )
 
      if(-not(Test-Path $Path)){
@@ -208,13 +213,14 @@ function New-RegistryValue
 
 #>
     param (
-     [parameter(Mandatory=$true)]
+     [Parameter(Mandatory = $true, Position=0)]
      [ValidateNotNullOrEmpty()]$Path,
-     [parameter(Mandatory=$true)]
+     [Parameter(Mandatory = $true, Position=1)]
+     [Alias('Entry')]
      [ValidateNotNullOrEmpty()]$Name,
-     [parameter(Mandatory=$true)]
+     [Parameter(Mandatory = $true, Position=2)]
      [ValidateNotNullOrEmpty()]$Value,
-     [parameter(Mandatory=$true)]
+     [Parameter(Mandatory = $true, Position=3)]
      [ValidateNotNullOrEmpty()]$Type
     )
 
@@ -293,6 +299,17 @@ function Format-RegistryPath
             $Hive = 'HKEY_CURRENT_CONFIG'
         }
 
+        if($ENV:TestRegistryFormat){
+             $Source = "https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/Placeholder/img/55.jpg"
+            [int]$FontSize = 16
+            [string]$Color='DimGray'
+            $Image = New-Object System.Windows.Controls.Image
+            $Image.Source = $Source
+            $Image.Height = [System.Drawing.Image]::FromFile($Source).Height / 8
+            $Image.Width = [System.Drawing.Image]::FromFile($Source).Width / 8
+                 
+            Show-MessageBox -Content $Image -Title "Hive is $Hive" -TitleFontWeight "Bold" -TitleBackground "$Color" -TitleTextForeground Black -TitleFontSize $FontSize -ContentBackground "$Color" -ContentFontSize ($FontSize-10) -ButtonTextForeground 'Black' -ContentTextForeground 'White'        
+        }
         Write-Verbose "Hive is $Hive"
         $RegPath = 'Computer\' + $Hive + '\' + $Path
         return $RegPath
