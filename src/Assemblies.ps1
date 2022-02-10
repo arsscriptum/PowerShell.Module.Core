@@ -121,18 +121,25 @@ function New-AssemblyReferences{
 
 function Register-Assemblies{
 
-    #Load required libraries 
-    #Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms, System.Drawing
-   
-    Foreach ($Ref in $Script:WindowsAssemblyReferences) {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+    $ErrorOccured = $False
+    if($ENV:FLAG_REGISTER_ASSEMBLIES -eq $null){
+        Foreach ($Ref in $Script:WindowsAssemblyReferences) {
         Try {
-            Write-Verbose "Assembly: " -f DarkRed -NoNewLine
-            Write-Verbose " [$Ref]" -f DarkYellow
+            Write-Verbose "Adding: $Ref"
             Add-Type -AssemblyName $Ref
         }  
         Catch {
             Write-Warning -Message "Failed to import $Ref"
+            $ErrorOccured = $True
         }
-    }    
+        if($ErrorOccured -eq $False){
+            $ENV:FLAG_REGISTER_ASSEMBLIES = 'OK'
+            [environment]::SetEnvironmentVariable('FLAG_REGISTER_ASSEMBLIES',"OK",'Process')    
+        }
+    }
+    }else{
+        Write-Verbose "Already registered"
+    }
 }
-

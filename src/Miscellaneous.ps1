@@ -7,8 +7,53 @@
   ╙──────────────────────────────────────────────────────────────────────────────────────
  #>
 
+function Invoke-PopupMessage{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage="Command Name (like cl.exe or LiveTcpUdpWatch.exe)")]
+        [string]$Title,
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage="Command Name (like cl.exe or LiveTcpUdpWatch.exe)")]
+        [string]$Msg
+    ) 
 
-        
+    Register-Assemblies
+
+    $Color = 'DarkOrchid'
+    $FontSize = 22
+    Show-MessageBox -Content "$Msg" -Title "$Msg" -TitleFontWeight "Bold" -TitleBackground "$Color" -TitleTextForeground Black -TitleFontSize $FontSize -ContentBackground "$Color" -ContentFontSize ($FontSize-10) -ButtonTextForeground 'Black' -ContentTextForeground 'White'
+}
+
+function Invoke-PopupImage{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage="Command Name (like cl.exe or LiveTcpUdpWatch.exe)")]
+        [string]$Title
+    ) 
+    Register-Assemblies
+
+    $Url = "https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/Img/black.png" 
+    $Source = $ENV:TMP_IMG_PATH
+    if($Source -eq $null){
+        $Dir = New-TemporaryDirectory
+        $Source = Join-Path $Dir '55.jpg'
+        $ENV:TMP_IMG_PATH = $Source
+        [environment]::SetEnvironmentVariable('TMP_IMG_PATH',"$Source",'Process')
+    }
+    if(-not(Test-Path $Source)){
+        Get-OnlineFileNoCache $Url $Source    
+    }
+    
+    [int]$FontSize = 16
+    [string]$Color='DimGray'
+    $Image = New-Object System.Windows.Controls.Image
+    $Image.Source = $Source
+    $Image.Height = [System.Drawing.Image]::FromFile($Source).Height 
+    $Image.Width = [System.Drawing.Image]::FromFile($Source).Width 
+         
+    Show-MessageBox -Content $Image -Title "$Title" -TitleFontWeight "Bold" -TitleBackground "$Color" -TitleTextForeground Black -TitleFontSize $FontSize -ContentBackground "$Color" -ContentFontSize ($FontSize-10) -ButtonTextForeground 'Black' -ContentTextForeground 'White'
+}
 
 function Get-CommandSource{
     [CmdletBinding(SupportsShouldProcess)]
