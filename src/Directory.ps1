@@ -631,6 +631,20 @@ function Get-DirectoryTree {
         [String]$Exclude
         
     )
+
+    $Current = (Get-Location).Path
+    pushd $Current
+
+    $Path=(Resolve-Path $Path)
+    if ($Path -eq $Null) { return $Null }
+    $Path=(Resolve-Path $Path).Path
+    $Exists = Test-Path -PathType Container $Path
+    if ($Exists -eq $False) {
+        return $Null
+    }
+
+   
+    
     $Tree = [System.Collections.ArrayList]::new()   
     $Path=(Resolve-Path $Path).Path
     if ($Path.Chars($Path.Length - 1) -ne '\'){
@@ -663,11 +677,12 @@ function Get-DirectoryTree {
             }
             $DirList = $DirList.Fullname | sort -Descending -unique
         }
-        $len = $DirList.Length
-        
+        $DirListCount = $DirList.Count
+        $PathLength = $Path.Length   
         $DirList.ForEach({
             $fn = $_
-            $rel = $fn.SubString($len, $fn.Length-$len)
+            $rel =(Resolve-Path -Path "$fn" -Relative)
+           
             $obj = [PSCustomObject]@{
                 Path = $fn
                 Relative = $rel
@@ -676,8 +691,9 @@ function Get-DirectoryTree {
         })
         return $Tree
     }catch {
-        Write-Host "[Get-DirectoryTree] " -n -f DarkRed
-        Write-Host "Not found" -f DarkYellow
+        Show-ExceptionDetails $_ -ShowStack
+    }finally{
+        popd
     }
 
     $ErrorActionPreference = $BackupErrorActionPreference
@@ -714,7 +730,17 @@ function Remove-DirectoryTree
         [Parameter(Mandatory=$false)]
         [switch]$Test     
     )
-    $Path=(Resolve-Path $Path).Path
+
+    try{
+
+    $Path=(Resolve-Path $Path)
+    if ($Path -eq $Null) { return $Null }
+    $Path=(Resolve-Path $Path)
+    $Exists = Test-Path -PathType Container $Path
+    if ($Exists -eq $False) {
+        return $Null
+    }
+    
     if ($Path.Chars($Path.Length - 1) -ne '\'){
         $Path = ($Path + '\')
     }    
@@ -737,15 +763,31 @@ function Remove-DirectoryTree
     $NumErrors=0
     $NumOperations=0
     $erroroccured=$false
-  
+    $Path=(Resolve-Path $Path)
+    if ($Path -eq $Null) { return $Null }
+    $Path=(Resolve-Path $Path)
+    $Exists = Test-Path -PathType Container $Path
+    if ($Exists -eq $False) {
+        return $Null
+    }
     $DirToRemove = Get-DirectoryTree $Path
+
+
+    if ($DirToRemove -eq $Null) { return $Null }
+    $Path=(Resolve-Path $Path)
+    $Exists = Test-Path -PathType Container $Path
+    if ($Exists -eq $False) {
+        return $Null
+    }
+    
+
     $DirToRemoveCount = $DirToRemove.Count
     Write-Host "[rmd] " -f DarkRed -NoNewLine
     Write-Host "Get Directory Tree . $DirToRemoveCount Branches to delete"  
     $DirToRemove.ForEach({
         $path = $_.Path
         $NumOperations++
-        try{
+        
             if( ($PSBoundParameters.ContainsKey('WhatIf') -eq $True) -Or ($PSBoundParameters.ContainsKey('Test') -eq $True)) {
                 Write-Host "[WOULD delete] " -f Blue -n
                 Write-Host "$path"    
@@ -756,14 +798,21 @@ function Remove-DirectoryTree
             }
 
 
-        }catch{
-         $NumDeleted++  
-        }
-    })
 
+    })
+    
     Write-Host "=====================================================" -f DarkRed
     Write-Host "[rmd] " -f DarkRed -n
     Write-Host "Folders deleted $NumDeleted. Errors $NumErrors"
+    $Check = (gci -Path $Path -ErrorAction Ignore)
+    if($Check -eq $Null){Write-Host  -f DarkCyan -n "[rmd] " ; Write-Host  -f DarkGreen "Deleted";}
+    }catch{
+        Write-Host "=====================================================" -f DarkRed
+        Write-Host "[rmd] " -f DarkRed -n
+        Write-Host "Folders deleted $NumDeleted. Errors $NumErrors"
+        $Check = (gci -Path $Path -ErrorAction Ignore)
+        if($Check -eq $Null){Write-Host  -f DarkCyan -n "[rmd] " ; Write-Host  -f DarkGreen "Deleted";}
+    }    
 
 } 
 
@@ -914,7 +963,7 @@ function New-DirectoryTree
     )
 
    
-    $Path=(Resolve-Path $Root).Path
+    $Path=(Resolve-Path $Root)
     if ($Path.Chars($Path.Length - 1) -ne '\'){
         $Path = ($Path + '\')
     }       
