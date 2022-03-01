@@ -73,7 +73,7 @@ function Get-OnlineFileNoCache{
     param(
         [Parameter(Mandatory=$true)]
         [string]$Url,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [string]$Path,
         [Parameter(Mandatory=$false)]
         [string]$ProxyAddress,
@@ -85,11 +85,18 @@ function Get-OnlineFileNoCache{
         [string]$UserAgent=""
     )
 
+	if( -not ($PSBoundParameters.ContainsKey('Path') )){
+		$Path = (Get-Location).Path
+		[Uri]$Val = $Url;
+		$Name = $Val.Segments[$Val.Segments.Length-1]
+		$Path = Join-Path $Path $Name
+		Write-Warning ("NetGetFileNoCache using path $Path")
+	}
     $ForceNoCache=$True
 
     $client = New-Object Net.WebClient
     if( $PSBoundParameters.ContainsKey('ProxyAddress') ){
-        Write-Warning ('NetGetFileNoCache''s -ProxyAddress parameter is not tested.')
+        Write-Warning ("NetGetFileNoCache''s -ProxyAddress parameter is not tested.")
         $proxy = New-object System.Net.WebProxy "$ProxyAddress"
         $proxy.Credentials = New-Object System.Net.NetworkCredential ($ProxyUser, $ProxyPassword) 
         $client.proxy=$proxy
