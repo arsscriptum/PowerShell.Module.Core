@@ -84,7 +84,7 @@ New-Alias -Name sid -Value Get-SIDUSerTable -Scope Global -ErrorAction Ignore -F
 #===============================================================================
 New-Alias -Name s -Value Invoke-WebSearch -Description "search the web, 's 'Star Wars' -e to search torent !" -Scope Global -ErrorAction Ignore  -Force
 New-Alias -Name ws -Value Invoke-WebSearch -Description "search the web, 's 'Star Wars' -e to search torent !" -Scope Global -ErrorAction Ignore  -Force
-New-Alias -Name call -Value Invoke-OnlineCall -Description "Call on the web, 's 'Star Wars' -e to search torent !" -Scope Global -ErrorAction Ignore  -Force
+New-Alias -Name call -Value Invoke-OnlineCall -Description "Call on the web" -Scope Global -ErrorAction Ignore  -Force
 
 
 New-Alias -Name parserepourl -value Split-RepositoryUrl -Force
