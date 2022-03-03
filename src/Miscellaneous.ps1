@@ -66,12 +66,19 @@ function Get-CommandSource{
     $Res = Get-Command $Name -ErrorAction Ignore
     if($Res){
         $Source = $Res.Source
-        Write-Host "𝙋𝙖𝙩𝙝`t==>`t" -NoNewLine -ForegroundColor DarkYellow
-        Write-Host "$Source" -ForegroundColor DarkGreen
-        return
+		if(($Source -match 'c:') -Or ($Source -match 'p:')){
+			return $Source
+		}else{
+			$TestModule = Get-Module -Name $Source
+			if($TestModule -eq $Null){
+				$Null = import-module -Name $mod -Global -Force -ErrorAction ignore -DisableNameChecking -SkipEditionCheck    
+			}
+
+			$TestModule=(Get-Module -Name $Source)
+			return $TestModule
+		} 
     }
-    Write-Host "𝙋𝙖𝙩𝙝`t==>`t" -NoNewLine -ForegroundColor DarkYellow
-    Write-Host "[NULL]" -ForegroundColor DarkRed
+	return $Null
 }
 
 
