@@ -7,6 +7,29 @@
   ╙──────────────────────────────────────────────────────────────────────────────────────
  #>
 
+
+
+function Get-FunctionSource{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage="Function Name")]
+        [string]$Name
+    ) 
+    $CmdType = Get-Command $Name
+    if($CmdType -eq $Null){ return }
+    $CmdType = (Get-Command $Name).CommandType
+    $Script = (Get-Item function:$Name).ScriptBlock
+    write-host -n -f DarkYellow "Function Name : " ;
+    write-host -f DarkRed "$Name" ;
+    write-host -n -f DarkYellow "Command Type  : " ;
+    write-host -f DarkRed "$CmdType" ;
+
+    return $Script
+
+}
+
+
 function Invoke-PopupMessage{
     [CmdletBinding(SupportsShouldProcess)]
     Param
@@ -65,18 +88,13 @@ function Get-CommandSource{
      
     $Res = Get-Command $Name -ErrorAction Ignore
     if($Res){
-        $Source = $Res.Source
-		if(($Source -match 'c:') -Or ($Source -match 'p:')){
-			return $Source
-		}else{
-			$TestModule = Get-Module -Name $Source
-			if($TestModule -eq $Null){
-				$Null = import-module -Name $mod -Global -Force -ErrorAction ignore -DisableNameChecking -SkipEditionCheck    
-			}
-
-			$TestModule=(Get-Module -Name $Source)
-			return $TestModule
-		} 
+        $Source = $($Res).Source
+		if($Source){   
+            return "$Source"
+		}
+        else{
+            return (Get-FunctionSource $Name)
+        }
     }
 	return $Null
 }
