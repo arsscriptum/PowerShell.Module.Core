@@ -8,7 +8,12 @@
 
 function Get-BatteryLevel {
     [CmdletBinding(SupportsShouldProcess)]
-    param ()  
+    param (
+        [Parameter(Mandatory=$false)]
+        [switch]$ShowStatusBar, 
+        [Parameter(Mandatory=$false)]
+        [int]$StatusBarTime = 3
+    )  
     [int]$PercentBattery = 0
     $WmicExe = (get-command wmic).Source  
     [array]$PowerData=  &"$WmicExe" "PATH" "Win32_Battery" "Get" "EstimatedChargeRemaining"
@@ -21,10 +26,15 @@ function Get-BatteryLevel {
         $PercentBattery = $Data[1]
     }
 
-    Write-Progress -Activity "Power" -Status "Power Status" -PercentComplete $PercentBattery
+    if($ShowStatusBar){
+        while($StatusBarTime){
+            Write-Progress -Activity "Power" -Status "Power Status" -PercentComplete $PercentBattery
+            Sleep 1
+            $StatusBarTime--
+        }
+    }
 
-
-
+    
     return $PercentBattery
 }
 
