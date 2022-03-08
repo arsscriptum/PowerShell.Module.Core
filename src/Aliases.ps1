@@ -8,10 +8,18 @@
 #===============================================================================
 
 New-Alias -Name ra -Value Register-Assemblies -Scope Global -ErrorAction Ignore -Force
+
+
+
+#===============================================================================
+# Battery.ps1
+#===============================================================================
+New-Alias -Name batt -Value Get-BatteryLevel -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name battery -Value Get-BatteryLevel -Scope Global -ErrorAction Ignore -Force
+
 #===============================================================================
 # Date.ps1
 #===============================================================================
-
 
 New-Alias -Name datestr -Value Get-DateString -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name ctime -Value Get-Date -Scope Global -ErrorAction Ignore -Force
