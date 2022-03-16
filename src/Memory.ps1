@@ -7,6 +7,33 @@
 ##  MEmory.ps1 - PowerShell script for memory usage data
 ##===----------------------------------------------------------------------===
  
+ 
+function Get-ProcessMemoryUsage_TEST_1
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory = $True)]
+        [ValidateNotNullOrEmpty()]$ProcessName
+    )
+    $ErrorActionPreference = 'Ignore'
+    try {
+
+        $list = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object -first 199 processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        $total = 0 
+        $countp = 0 
+        $list = $list | where ProcessName -match "$ProcessName" ; 
+
+        $listnum = $list.'Mem Usage(MB)' ;   
+        ForEach($n in $listnum) { $total += $n ; $countp++; } 
+
+        Write-Host "Total for $countp $ProcessName process: $total Mb"
+    }
+    catch {
+        Write-Host '[ProcessMemoryUsage_TEST_1] ' -n -f DarkRed
+        Write-Host "$_" -f DarkYellow
+    }
+}
+ 
 function Get-ProcessMemoryUsage
 {
     [CmdletBinding(SupportsShouldProcess)]
@@ -86,24 +113,59 @@ function Get-TopMemoryUsers
 }
 
 
-function Get-MemoryUser
+function Get-ProcessMemoryUsageDetails1
 {
     [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory = $True)]
-        [string]$Name
+        [string]$Name,
+        [Parameter(Mandatory = $False)]
+        [switch]$ShowCmdline
     )
     $ErrorActionPreference = 'Ignore'
     try {
-        Write-Host '[MemoryUser] ' -n -f DarkRed
-        Write-Host "for $Name : PARSING.... `nPlease wait...." -f DarkYellow
 
-        $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        if($ShowCmdline){
+            $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}    
+        }
+        else{
+            $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        }
+        
         $List = $List | where ProcessName -match "$Name"
         $List
    }
     catch {
-        Write-Host '[TopMemoryUsers] ' -n -f DarkRed
+        Write-Host '[ProcessMemoryUsageDetails] ' -n -f DarkRed
+        Write-Host "$_" -f DarkYellow
+    }
+}
+
+
+function Get-ProcessMemoryUsageDetails2
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory = $True)]
+        [string]$Name,
+        [Parameter(Mandatory = $False)]
+        [switch]$ShowCmdline
+    )
+    $ErrorActionPreference = 'Ignore'
+    try {
+ 
+        if($ShowCmdline){
+            $List = Get-CimInstance -ClassName  WIN32_PROCESS -Filter "Name = '$Name'" | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}    
+        }
+        else{
+            $List = Get-CimInstance -ClassName  WIN32_PROCESS -Filter "Name = '$Name'" | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        }
+        
+        #$List = $List | where ProcessName -match "$Name"
+        $List
+   }
+    catch {
+        Write-Host '[ProcessMemoryUsageDetails] ' -n -f DarkRed
         Write-Host "$_" -f DarkYellow
     }
 }
