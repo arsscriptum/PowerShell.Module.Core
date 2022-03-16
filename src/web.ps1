@@ -46,6 +46,16 @@ function Get-ChromeApp{
         return $Null
     }
 }
+function Get-ChromiumShim{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    $ChromiumShim="C:\Programs\Shims\cr.exe"
+    return $ChromiumShim
+    
+    
+}
 
 function Invoke-OnlineCall{
     [CmdletBinding(SupportsShouldProcess)]
@@ -65,11 +75,15 @@ function Invoke-StartWeb{
     Param
     (
         [Parameter(Mandatory=$false)]
+        [Alias('c')]
+        [switch]$Chromium,
+        [Parameter(Mandatory=$false)]
         [Alias('h')]
         [switch]$Help
     ) 
     
-    $ChromeExe = (Get-ChromeApp)
+    $BrowserExe = (Get-ChromeApp)
+    if($Chromium){ $BrowserExe =  Get-ChromiumShim ; Write-Host -n -f DarkRed "[Invoke-StartWeb] " ; Write-Host -n -f DarkYellow "Using ChromiumShim $BrowserExe" }
     $p = (Get-Item $Profile).DirectoryName
     $p = Join-Path $p 'web-start.txt'    
     if($Help){
@@ -91,8 +105,8 @@ function Invoke-StartWeb{
     
     ForEach($URL in $c){
         write-host "[Invoke-StartWeb] " -NoNewLine -f DarkRed
-        write-host "Opening $URL with $ChromeExe" -f DarkYellow            
-        start-process "$ChromeExe" -ArgumentList "$URL" 
+        write-host "Opening $URL with $BrowserExe" -f DarkYellow            
+        start-process "$BrowserExe" -ArgumentList "$URL" 
     }    
     
 }
