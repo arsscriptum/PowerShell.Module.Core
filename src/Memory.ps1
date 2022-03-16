@@ -95,11 +95,12 @@ function Get-MemoryUser
     )
     $ErrorActionPreference = 'Ignore'
     try {
-        $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="Path";Expression={$_.Path}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        Write-Host '[TopMemoryUsers] ' -n -f DarkRed
+        Write-Host "Please wait...." -f DarkYellow
+        
+        $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}
         $List = $List | where ProcessName -match "$Name"
         $List
-        Write-Host '`n[TopMemoryUsers] ' -n -f DarkRed
-        Write-Host "Use Get-ProcessCmdLineById <processid> to get cmdline arguments" -f DarkYellow
    }
     catch {
         Write-Host '[TopMemoryUsers] ' -n -f DarkRed
