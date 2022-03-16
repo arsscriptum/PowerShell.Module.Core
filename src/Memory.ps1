@@ -68,7 +68,56 @@ function Get-MemoryUsageForAllProcesses
     }
 }
 
+function Get-TopMemoryUsers
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory = $False)]
+        [int]$Num = 5
+    )
+    $ErrorActionPreference = 'Ignore'
+    try {
+        Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object -first $Num processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
+   }
+    catch {
+        Write-Host '[TopMemoryUsers] ' -n -f DarkRed
+        Write-Host "$_" -f DarkYellow
+    }
+}
 
+
+function Get-MemoryUser
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory = $True)]
+        [string]$Name
+    )
+    $ErrorActionPreference = 'Ignore'
+    try {
+        $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="Path";Expression={$_.Path}},@{Name="ProcessId";Expression={$_.ProcessId}}
+        $List = $List | where ProcessName -match "$Name"
+
+        Write-Host '`n[TopMemoryUsers] ' -n -f DarkRed
+        Write-Host "Use Get-ProcessCmdLineById <processid> to get cmdline arguments" -f DarkYellow
+   }
+    catch {
+        Write-Host '[TopMemoryUsers] ' -n -f DarkRed
+        Write-Host "$_" -f DarkYellow
+    }
+}
+
+
+function Get-ProcessCmdLineById
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory = $True)]
+        [int]$ProcessId
+    )
+    $cmdline = (Get-CimInstance Win32_Process -Filter "ProcessId = '$ProcessId'" | select CommandLine ).CommandLine    
+    return $cmdline
+}
 
 function Get-ProcessCmdLine
 {
