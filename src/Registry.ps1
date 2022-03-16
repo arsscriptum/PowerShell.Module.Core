@@ -165,7 +165,9 @@ function Set-RegistryValue
         [Alias('Entry')]
         [String]$Name,
         [parameter(Mandatory=$true, Position=2)]
-        [String]$Value
+        [String]$Value,
+        [Parameter(Mandatory = $false, Position=3)]
+        [string]$Type='string'
     )
 
      if(-not(Test-Path $Path)){
@@ -177,7 +179,7 @@ function Set-RegistryValue
             Remove-ItemProperty -Path $Path -Name $Name -Force  -ErrorAction ignore | Out-null
         }
       
-        New-ItemProperty -Path $Path -Name $Name -Value $Value -Force | Out-null
+        New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-null
         return $true
     }
 

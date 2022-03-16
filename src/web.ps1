@@ -58,3 +58,30 @@ function Invoke-OnlineCall{
 
     start-process "$ChromeExe" -ArgumentList "$URL" 
 }
+
+
+function Invoke-StartWeb{
+    [CmdletBinding(SupportsShouldProcess)]
+     param()
+
+    $numprocess = (Get-Process chrome -EA Ignore).Count
+    $KillerExe = (Get-Command 'pk.exe').Source
+    if($numprocess){
+        Write-Host -n -f DarkRed "[IMPORTANT] "
+        Write-Host -n -f DarkYellow "kill previous chrome process? "
+        $a = Read-Host '(y/n)'
+        if($a -eq 'y'){ &"$KillerExe" "chrome" -n;}    
+    }
+    
+    $ChromeExe = (Get-ChromeApp)
+    $p = (Get-Item $Profile).DirectoryName
+    $p = Join-Path $p 'web-start.txt'
+    $c = Get-Content -Path $p
+    
+    ForEach($URL in $c){
+        write-host "[Invoke-StartWeb] " -NoNewLine -f DarkRed
+        write-host "Opening $URL with $ChromeExe" -f DarkYellow            
+        start-process "$ChromeExe" -ArgumentList "$URL" 
+    }    
+    
+}
