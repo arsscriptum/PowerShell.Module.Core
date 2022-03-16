@@ -40,9 +40,9 @@ function Measure-TimeBlock{
 
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false,position=0)]
         [string]$Name,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false,position=1)]
         [ScriptBlock]$block,
         [Parameter(Mandatory = $false)]
         [switch]$Raw,
@@ -64,7 +64,7 @@ function Measure-TimeBlock{
 
     $formatTime = Invoke-FormatElapsedTime $time
     if($Raw -eq $False){
-        Write-Host -n "[$StepName] " -f DarkRed
+        Write-Host -n "[$Name] " -f DarkRed
         Write-Host "$formatTime" -f DarkYellow
     }
     return $formatTime

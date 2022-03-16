@@ -113,56 +113,31 @@ function Get-TopMemoryUsers
 }
 
 
-function Get-ProcessMemoryUsageDetails1
+function Get-ProcessMemoryUsageDetails
 {
     [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory = $True)]
         [string]$Name,
-        [Parameter(Mandatory = $False)]
-        [switch]$ShowCmdline
+        [Parameter(Mandatory = $false)]
+        [switch]$Total        
     )
-    $ErrorActionPreference = 'Ignore'
-    try {
+    [bool]$ShowCmdline=$True
 
-        if($ShowCmdline){
-            $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}    
-        }
-        else{
-            $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
-        }
-        
-        $List = $List | where ProcessName -match "$Name"
-        $List
-   }
-    catch {
-        Write-Host '[ProcessMemoryUsageDetails] ' -n -f DarkRed
-        Write-Host "$_" -f DarkYellow
-    }
-}
-
-
-function Get-ProcessMemoryUsageDetails2
-{
-    [CmdletBinding(SupportsShouldProcess)]
-    param (
-        [Parameter(Mandatory = $True)]
-        [string]$Name,
-        [Parameter(Mandatory = $False)]
-        [switch]$ShowCmdline
-    )
     $ErrorActionPreference = 'Ignore'
     try {
  
-        if($ShowCmdline){
-            $List = Get-CimInstance -ClassName  WIN32_PROCESS -Filter "Name = '$Name'" | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}    
-        }
-        else{
-            $List = Get-CimInstance -ClassName  WIN32_PROCESS -Filter "Name = '$Name'" | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="ProcessId";Expression={$_.ProcessId}}
-        }
+        $List = Get-CimInstance -ClassName  WIN32_PROCESS -Filter "Name = '$Name'" | Sort-Object -Property ws -Descending | Select-Object ProcessId, processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}    
+        $Total = ($List | measure-object 'Mem Usage(MB)' -sum).Sum
         
-        #$List = $List | where ProcessName -match "$Name"
-        $List
+        if($Total){
+            Write-Host '[ProcessMemoryUsageDetails] ' -n -f DarkRed
+            Write-Host "Total Usage for $Name is $Total MB" -f DarkYellow
+            
+            $Total
+        }else{
+            $List    
+        }
    }
     catch {
         Write-Host '[ProcessMemoryUsageDetails] ' -n -f DarkRed
