@@ -95,9 +95,9 @@ function Get-MemoryUser
     )
     $ErrorActionPreference = 'Ignore'
     try {
-        Write-Host '[TopMemoryUsers] ' -n -f DarkRed
-        Write-Host "Please wait...." -f DarkYellow
-        
+        Write-Host '[MemoryUser] ' -n -f DarkRed
+        Write-Host "for $Name : PARSING.... `nPlease wait...." -f DarkYellow
+
         $List = Get-CimInstance -ClassName  WIN32_PROCESS | Sort-Object -Property ws -Descending | Select-Object processname, @{Name="Mem Usage(MB)";Expression={[math]::round($_.ws / 1mb)}},@{Name="CmdLine";Expression={Get-ProcessCmdLineById $_.ProcessId}},@{Name="ProcessId";Expression={$_.ProcessId}}
         $List = $List | where ProcessName -match "$Name"
         $List
