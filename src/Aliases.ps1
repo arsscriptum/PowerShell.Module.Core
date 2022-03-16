@@ -93,7 +93,9 @@ New-Alias -Name sid -Value Get-SIDUSerTable -Scope Global -ErrorAction Ignore -F
 New-Alias -Name s -Value Invoke-WebSearch -Description "search the web, 's 'Star Wars' -e to search torent !" -Scope Global -ErrorAction Ignore  -Force
 New-Alias -Name ws -Value Invoke-WebSearch -Description "search the web, 's 'Star Wars' -e to search torent !" -Scope Global -ErrorAction Ignore  -Force
 New-Alias -Name call -Value Invoke-OnlineCall -Description "Call on the web" -Scope Global -ErrorAction Ignore  -Force
-New-Alias -Name web -Value Invoke-StartWeb -Description "web" -Scope Global -ErrorAction Ignore  -Force
+$p = (Get-Item $Profile).DirectoryName
+$p = Join-Path $p 'web-start.txt' 
+New-Alias -Name web -Value Invoke-StartWeb -Description "Open a page for each address in $p" -Scope Global -ErrorAction Ignore  -Force
 
 New-Alias -Name parserepourl -value Split-RepositoryUrl -Force
 New-Alias -Name parseurl -value Split-Url -Force

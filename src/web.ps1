@@ -61,9 +61,22 @@ function Invoke-OnlineCall{
 
 
 function Invoke-StartWeb{
-    [CmdletBinding(SupportsShouldProcess)]
-     param()
-
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$false)]
+        [Alias('h')]
+        [switch]$Help
+    ) 
+    
+    $ChromeExe = (Get-ChromeApp)
+    $p = (Get-Item $Profile).DirectoryName
+    $p = Join-Path $p 'web-start.txt'    
+    if($Help){
+        Write-Host -n -f DarkRed "[Invoke-StartWeb] "
+        Write-Host -n -f DarkYellow "Open a page for each address in $p"
+        return
+    }
     $numprocess = (Get-Process chrome -EA Ignore).Count
     $KillerExe = (Get-Command 'pk.exe').Source
     if($numprocess){
@@ -73,9 +86,7 @@ function Invoke-StartWeb{
         if($a -eq 'y'){ &"$KillerExe" "chrome" -n;}    
     }
     
-    $ChromeExe = (Get-ChromeApp)
-    $p = (Get-Item $Profile).DirectoryName
-    $p = Join-Path $p 'web-start.txt'
+   
     $c = Get-Content -Path $p
     
     ForEach($URL in $c){
