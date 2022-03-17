@@ -11,11 +11,11 @@
 function Invoke-FindAndReplace{
     [CmdletBinding(SupportsShouldProcess)]
     Param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
-        [string]$Path='',      
+    (     
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
         [string]$Search,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="Function Name")]
+        [string]$Path='',         
         [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="Function Name")]
         [string]$Filter='*',          
         [Parameter(Mandatory=$false, ValueFromPipeline=$true,  HelpMessage="Function Name")]
