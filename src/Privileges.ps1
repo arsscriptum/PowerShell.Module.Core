@@ -16,7 +16,7 @@ class ChannelProperties
 {
     #ChannelProperties
     [string]$Channel = 'PRIVILEGES'
-    [ConsoleColor]$TitleColor = 'Blue'
+    [ConsoleColor]$TitleColor = (Get-RandomColor)
     [ConsoleColor]$MessageColor = 'DarkGray'
     [ConsoleColor]$ErrorColor = 'DarkRed'
     [ConsoleColor]$SuccessColor = 'DarkGreen'

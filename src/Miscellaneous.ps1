@@ -30,17 +30,19 @@ function Invoke-FindAndReplace{
     if($FileCount -eq 0){ throw "no files found with filter $Filter in $Path"; }
     ForEach($file in $Files){
         Write-Verbose "Searching in $file for $Search "
-        $res =  (Get-Content $file) | Select-String -Pattern "$Search" -List -Raw
+        $content = (Get-Content $file)
+        $res =  $content | Select-String -Pattern "$Search" -List -Raw
         $FoundInst = $res.Count
         if($FoundInst -gt 0){
-            Write-ChannelMessage "Found $FoundInst Instances in $file"
-            $res
+            Write-Output "Found $FoundInst Instances in $file"
             if($Replace -ne ''){
-                ForEach($file in $Files){
-                    Write-ChannelMessage "Replace in $file. $Search to $Replace"
-                    (Get-Content $file) -replace "$Search","$Replace" | Set-Content $file
-                }
-            }  
+                Write-Output "Replace in $file. $Search to $Replace"
+                
+                $content = $content.Replace($Search,$Replace)
+                $content  | Set-Content $file
+            }  else{
+                $Res
+            }
         }
     }    
 }
