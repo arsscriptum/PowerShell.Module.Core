@@ -13,7 +13,7 @@ function Invoke-FindAndReplace{
     Param
     (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
-        [string]$Path,      
+        [string]$Path='',      
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
         [string]$Search,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="Function Name")]
@@ -24,6 +24,7 @@ function Invoke-FindAndReplace{
         [switch]$Recurse        
     ) 
 
+    if($Path -eq ''){$Path = (Get-Location).Path ; }
     $Files = (gci -Path $Path -File -Recurse:$Recurse -Filter "$Filter").Fullname
     $FileCount = $Files.Count
 
@@ -40,8 +41,8 @@ function Invoke-FindAndReplace{
                 
                 $content = $content.Replace($Search,$Replace)
                 $content  | Set-Content $file
-            }  else{
-                $Res
+            }else{
+                $res
             }
         }
     }    
