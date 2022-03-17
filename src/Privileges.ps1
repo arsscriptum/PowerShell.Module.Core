@@ -22,7 +22,7 @@ class ChannelProperties
     [ConsoleColor]$SuccessColor = 'DarkGreen'
     [ConsoleColor]$ErrorDescriptionColor = 'DarkYellow'
 }
-$Global:ChannelProps = [ChannelProperties]::new()
+$Script:ChannelProps = [ChannelProperties]::new()
 
 function New-CustomAssembly{
     <#

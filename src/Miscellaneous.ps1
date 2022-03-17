@@ -7,6 +7,44 @@
  #>
 
 
+
+function Invoke-FindAndReplace{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
+        [string]$Path,      
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="Function Name")]
+        [string]$Search,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="Function Name")]
+        [string]$Filter='*',          
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true,  HelpMessage="Function Name")]
+        [string]$Replace='',
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true,  HelpMessage="Function Name")]
+        [switch]$Recurse        
+    ) 
+
+    $Files = (gci -Path $Path -File -Recurse:$Recurse -Filter "$Filter").Fullname
+    $FileCount = $Files.Count
+
+    if($FileCount -eq 0){ throw "no files found with filter $Filter in $Path"; }
+    ForEach($file in $Files){
+        Write-Verbose "Searching in $file for $Search "
+        $res =  (Get-Content $file) | Select-String -Pattern "$Search" -List -Raw
+        $FoundInst = $res.Count
+        if($FoundInst -gt 0){
+            Write-ChannelMessage "Found $FoundInst Instances in $file"
+            $res
+            if($Replace -ne ''){
+                ForEach($file in $Files){
+                    Write-ChannelMessage "Replace in $file. $Search to $Replace"
+                    (Get-Content $file) -replace "$Search","$Replace" | Set-Content $file
+                }
+            }  
+        }
+    }    
+}
+
 function Get-FunctionSource{
     [CmdletBinding(SupportsShouldProcess)]
     Param
