@@ -7,6 +7,60 @@
  #>
 
 
+function New-RandomFilename{
+<#
+    .SYNOPSIS
+            Create a RandomFilename 
+    .DESCRIPTION
+            Create a RandomFilename 
+#>
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$false)]
+        [string]$Path = "$ENV:Temp",
+        [Parameter(Mandatory=$false)]
+        [string]$Extension = 'tmp',
+        [Parameter(Mandatory=$false)]
+        [int]$MaxLen = 6,
+        [Parameter(Mandatory=$false)]
+        [switch]$CreateFile,
+        [Parameter(Mandatory=$false)]
+        [switch]$CreateDirectory
+    )    
+    try{
+        if($MaxLen -lt 4){throw "MaxLen must be between 4 and 36"}
+        if($MaxLen -gt 36){throw "MaxLen must be between 4 and 36"}
+        [string]$filepath = $Null
+        [string]$rname = (New-Guid).Guid
+        Write-Verbose "Generated Guid $rname"
+        [int]$rval = Get-Random -Minimum 0 -Maximum 9
+        Write-Verbose "Generated rval $rval"
+        [string]$rname = $rname.replace('-',"$rval")
+        Write-Verbose "replace rval $rname"
+        [string]$rname = $rname.SubString(0,$MaxLen) + '.' + $Extension
+        Write-Verbose "Generated file name $rname"
+        if($CreateDirectory -eq $true){
+            [string]$rdirname = (New-Guid).Guid
+            $newdir = Join-Path "$Path" $rdirname
+            Write-Verbose "CreateDirectory option: creating dir: $newdir"
+            $Null = New-Item -Path $newdir -ItemType "Directory" -Force -ErrorAction Ignore
+            $filepath = Join-Path "$newdir" "$rname"
+        }
+        $filepath = Join-Path "$Path" $rname
+        Write-Verbose "Generated filename: $filepath"
+
+        if($CreateFile -eq $true){
+            Write-Verbose "CreateFile option: creating file: $filepath"
+            $Null = New-Item -Path $filepath -ItemType "File" -Force -ErrorAction Ignore 
+        }
+        return $filepath
+        
+    }catch{
+        Show-ExceptionDetails $_ -ShowStack
+    }
+}
+
 
 function Invoke-FindAndReplace{
     [CmdletBinding(SupportsShouldProcess)]
@@ -34,7 +88,9 @@ function Invoke-FindAndReplace{
         $content = (Get-Content $file)
         $res =  $content | Select-String -Pattern "$Search" -List -Raw
         $FoundInst = $res.Count
+
         if($FoundInst -gt 0){
+            $res
             Write-Output "Found $FoundInst Instances in $file"
             if($Replace -ne ''){
                 Write-Output "Replace in $file. $Search to $Replace"
@@ -42,7 +98,7 @@ function Invoke-FindAndReplace{
                 $content = $content.Replace($Search,$Replace)
                 $content  | Set-Content $file
             }else{
-                $res
+                
             }
         }
     }    
