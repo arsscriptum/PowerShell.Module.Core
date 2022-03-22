@@ -169,3 +169,21 @@ function Write-ChannelError{                # NOEXPORT
     Write-Host "[ERROR] " -f $($Script:CPropsCore.ErrorColor) -NoNewLine
     Write-Host "$ExceptMsg`n`n" -ForegroundColor DarkYellow
 }
+
+
+function Write-Warning {
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$false)]
+        [int]$Num=3
+    )    
+    $Warn1 = " ⚡"
+    $Warn2 = "WARNING"
+    for($i = 0 ; $i -lt $Num ; $i++){
+        write-host -f DarkYellow -n $Warn1 
+        write-host -f DarkRed -n $Warn2     
+    }
+    write-host -f DarkYellow -n $Warn1 
+}
+

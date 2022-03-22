@@ -7,6 +7,9 @@
  #>
 
 
+
+
+
 function New-RandomFilename{
 <#
     .SYNOPSIS
@@ -610,6 +613,20 @@ function Approve-Verb {
 
     return (Get-Verb).Verb.ToLower().Contains($Name.ToLower())
 
+}
+
+function Get-CoreModuleInformation{
+
+        $ModuleName = $ExecutionContext.SessionState.Module
+        $ModuleScriptPath = $ScriptMyInvocation = $Script:MyInvocation.MyCommand.Path
+        $ModuleScriptPath = (Get-Item "$ModuleScriptPath").DirectoryName
+        $CurrentScriptName = $Script:MyInvocation.MyCommand.Name
+        $ModuleInformation = @{
+            Module        = $ModuleName
+            ModuleScriptPath  = $ModuleScriptPath
+            CurrentScriptName = $CurrentScriptName
+        }
+        return $ModuleInformation
 }
 
 function Get-InvocationInformation{

@@ -78,14 +78,13 @@ function Test-RegistryValue
     if(-not(Test-Path $Path)){
         return $false
     }
-    try {
-        Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Name -ErrorAction Stop | Out-Null
-        return $true
-    }
+    $props = Get-ItemProperty -Path $Path -ErrorAction Ignore
+    if($props -eq $Null){return $False}
+    $value =  $props.$Name
+    if($null -eq $value -or $value.Length -eq 0) { return $false }
 
-    catch {
-        return $false
-    }
+    return $true
+   
 }
 
 
@@ -119,7 +118,7 @@ function Get-RegistryValue
         [string]$Name
     )
 
-    if(-not(Test-Path $Path)){
+    if(-not(Test-RegistryValue $Path $Name)){
         return $null
     }
     try {
