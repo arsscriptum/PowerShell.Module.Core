@@ -55,7 +55,6 @@ Function Get-MessageBoxResult{
 }
 
 Function Show-MessageBox{
-    
     # Define Parameters
     [CmdletBinding(SupportsShouldProcess)]
     Param
@@ -667,8 +666,7 @@ function Show-MessageBoxVoice{
 }
 
 
-function Show-MessageBoxError
-{
+function Show-MessageBoxError{
 <#
     .SYNOPSIS
     Display a mesage box with colors to highlight a ERROR message
@@ -694,6 +692,34 @@ function Show-MessageBoxError
     Show-MessageBox @ErrorMsgParams -Content $Text
 }
 
+
+
+function Show-MessageBoxInfo{
+<#
+    .SYNOPSIS
+    Display a mesage box with colors to highlight a ERROR message
+    .DESCRIPTION
+    Display a mesage box with colors to highlight a WARNING message
+    .PARAMETER Text
+    String to display
+#>
+ [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $True, Position = 0, ValueFromPipeline = $True)][AllowEmptyString()]$Text,
+        [Parameter(Mandatory = $false, Position = 1, ValueFromPipeline = $True)][AllowEmptyString()]$Title='Info'
+        
+    )
+   
+    $MsgParams = @{
+        Title = $Title
+        TitleBackground = "Blue"
+        TitleTextForeground = "Black"
+        TitleFontWeight = "Bold"
+        TitleFontSize = 20
+    }
+
+    Show-MessageBox @MsgParams -Content $Text
+}
 
 
 # SIG # Begin signature block

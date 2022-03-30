@@ -110,3 +110,26 @@ function Invoke-StartWeb{
     }    
     
 }
+
+function Invoke-OpenWebPage{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [Alias('h')]
+        [switch]$Url,        
+        [Parameter(Mandatory=$false)]
+        [Alias('c')]
+        [switch]$Chromium,
+        [Parameter(Mandatory=$false)]
+        [Alias('h')]
+        [switch]$Help
+    ) 
+    
+    $BrowserExe = (Get-ChromeApp)
+    if($Chromium){ $BrowserExe =  Get-ChromiumShim ; Write-Host -n -f DarkRed "[Invoke-StartWeb] " ; Write-Host -n -f DarkYellow "Using ChromiumShim $BrowserExe" }
+
+    write-host "[Invoke-OpenWebPage] " -NoNewLine -f DarkRed
+    write-host "Opening $Url with $BrowserExe" -f DarkYellow            
+    start-process "$BrowserExe" -ArgumentList "$Url" 
+}
