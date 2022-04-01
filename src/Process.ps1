@@ -25,9 +25,9 @@ function Invoke-Process
 {
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        [Parameter(Mandatory = $True)]
-        [ValidateNotNullOrEmpty()]$FilePath,
-        [Parameter(Mandatory = $True)]
+        [Parameter(Mandatory = $True, Position=0)]
+        [ValidateNotNullOrEmpty()]$ExePath,
+        [Parameter(Mandatory = $True, Position=1)]
         [string[]]$ArgumentList,
         [Parameter(Mandatory = $False)]
         [string]$WorkingDirectory,
@@ -48,17 +48,17 @@ function Invoke-Process
 
             $u=$Credential.UserName
             $p=$Credential.GetNetworkCredential().Password
-            Write-Host "Using suplied creds. $u $p"
+            Write-VerboseMsg "Using suplied creds. $u $p"
            
     }
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     try {
-        $Guid=$(( New-Guid ).Guid)  
-        $FNameOut=$env:Temp + "\InvokeProcessOut"+$Guid.substring(0,4)+".log"
-        $FNameErr=$env:Temp + "\InvokeProcessErr"+$Guid.substring(0,4)+".log"
+        
+        $FNameOut = New-RandomFilename -Extension 'log' -CreateDirectory
+        $FNameErr = New-RandomFilename -Extension 'log' -CreateDirectory
 
         $startProcessParams = @{
-            FilePath               = $FilePath
+            FilePath               = $ExePath
             RedirectStandardError  = $FNameErr
             RedirectStandardOutput = $FNameOut
             Wait                   = $true
@@ -71,9 +71,9 @@ function Invoke-Process
         $cmdId=0
         $cmdExitCode=0
 
-        if ($PSCmdlet.ShouldProcess("Process [$($FilePath)]", "Run with args: [$($ArgumentList)]")) {
+        if ($PSCmdlet.ShouldProcess("Process [$($ExePath)]", "Run with args: [$($ArgumentList)]")) {
             if ($ArgumentList) {
-                Write-Verbose -Message "$FilePath $ArgumentList"
+                Write-VerboseMsg -Message "Invoke-Process -ExePath $ExePath -ArgumentList $ArgumentList"
                 if($UseSuppliedCredentials){
                     $cmd = Start-Process @startProcessParams -ArgumentList $ArgumentList -Credential $Credential| Out-null
                     $cmdExitCode = $cmd.ExitCode
@@ -89,7 +89,7 @@ function Invoke-Process
             
             }
             else {
-                Write-Verbose $FilePath
+                Write-Verbose $ExePath
                 $cmd = Start-Process @startProcessParams
                 $cmdExitCode = $cmd.ExitCode
                 $cmdId = $cmd.Id 
@@ -116,10 +116,11 @@ function Invoke-Process
         }
     }
     catch {
-        $PSCmdlet.ThrowTerminatingError($_)
+        Show-ExceptionDetails $_
     }
     finally {
-        Remove-Item -Path $FNameOut, $FNameErr -Force -ErrorAction Ignore
+        $Null = Remove-Item -Path $FNameOut -Force -ErrorAction Ignore
+        $Null = Remove-Item -Path $FNameErr -Force -ErrorAction Ignore
     }
 }
  

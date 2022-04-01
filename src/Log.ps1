@@ -30,6 +30,26 @@ class ChannelProperties
 }
 $Script:CPropsCore = [ChannelProperties]::new()
 
+function Write-VerboseMsg{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [string]$Message
+    )
+    [bool]$ShowVerboseMsg = $False
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) {
+        [bool]$ShowVerboseMsg = $True
+    }
+    if($Verbose){
+        [bool]$ShowVerboseMsg = $True
+    }
+    if($ShowVerboseMsg){
+        Write-Host "[VerboseMsg] " -f Blue -NoNewLine
+        Write-Host "$Message" -f Gray 
+    }
+}
+
 
 function Write-MMsg{               # NOEXPORT   
     [CmdletBinding(SupportsShouldProcess)]
