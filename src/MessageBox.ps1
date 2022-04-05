@@ -148,7 +148,7 @@ Function Show-MessageBox{
         $AttributeCollection.Add($ValidateSetAttribute)
         $RuntimeParameter = New-Object System.Management.Automation.RuntimeDefinedParameter($FontFamily, [string], $AttributeCollection)
         $RuntimeParameterDictionary.Add($FontFamily, $RuntimeParameter)
-        $PSBoundParameters.FontFamily = "Segoe UI"
+        $PSBoundParameters.FontFamily = "Consolas"
 
         # TitleFontWeight
         $TitleFontWeight = 'TitleFontWeight'
