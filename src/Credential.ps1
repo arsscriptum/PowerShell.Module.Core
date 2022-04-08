@@ -95,6 +95,12 @@ function Register-AppCredentials {
     (
         [Parameter(Mandatory=$True,Position=0)]
         [string]$Id,
+        [Parameter(Mandatory=$false)]
+        [Alias('u')]
+        [String]$Username,
+        [Parameter(Mandatory=$false)]
+        [Alias('p')]
+        [String]$Password,
         [Alias("global","allusers")]
         [Parameter(Mandatory=$false)]
         [switch]$GlobalScope
@@ -109,16 +115,25 @@ function Register-AppCredentials {
         
     }
 
-    $Credentials = Get-Credential
+    [pscredential]$Credentials = $Null
+    if ( ($PSBoundParameters.ContainsKey('Username')) -And ($PSBoundParameters.ContainsKey('Password')) ) {
+
+        # Convert to SecureString
+        [securestring]$SecPassword = ConvertTo-SecureString $Password -AsPlainText -Force
+        [pscredential]$Credentials = New-Object System.Management.Automation.PSCredential ($Username, $SecPassword)
+    }else{
+        [pscredential]$Credentials = Get-Credential
+    }
+
     $Username = $Credentials.UserName
-    $Passwd=ConvertFrom-SecureString $Credentials.Password
+    $EncodedPassword=ConvertFrom-SecureString $Credentials.Password        
           
     $Now = Get-Date
     $epoch = [DateTime]::SpecifyKind('1970-01-01', 'Utc')
     $epoch = [Int64]($Now.ToUniversalTime() - $epoch).TotalSeconds
     New-RegistryValue -Path $RegKeyCredsManagerRoot -Name "$Id" -Type "DWORD" -Value $epoch
     $r1=New-RegistryValue -Path $RegKeyRoot -Name "username" -Value $Username -Type "String"
-    $r2=New-RegistryValue -Path $RegKeyRoot -Name "password" -Value $Passwd   -Type "String"
+    $r2=New-RegistryValue -Path $RegKeyRoot -Name "password" -Value $EncodedPassword   -Type "String"
 
     return ($r1 -And $r2)
 }
