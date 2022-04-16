@@ -48,7 +48,7 @@ function Invoke-Process
 
             $u=$Credential.UserName
             $p=$Credential.GetNetworkCredential().Password
-            Write-VerboseMsg "Using suplied creds. $u $p"
+            Write-Verbose "Using suplied creds. $u $p"
            
     }
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -70,31 +70,41 @@ function Invoke-Process
         $cmdName=""
         $cmdId=0
         $cmdExitCode=0
-
+        $cmdTotalProcessorTime=0
         if ($PSCmdlet.ShouldProcess("Process [$($ExePath)]", "Run with args: [$($ArgumentList)]")) {
             if ($ArgumentList) {
-                Write-VerboseMsg -Message "Invoke-Process -ExePath $ExePath -ArgumentList $ArgumentList"
+                Write-Verbose -Message "Invoke-Process -ExePath $ExePath -ArgumentList $ArgumentList"
                 if($UseSuppliedCredentials){
-                    $cmd = Start-Process @startProcessParams -ArgumentList $ArgumentList -Credential $Credential| Out-null
+                    Write-Verbose -Message "RUN Start-Process Level 1"
+                    [System.Diagnostics.Process]$cmd = Start-Process @startProcessParams -ArgumentList $ArgumentList -Credential $Credential
                     $cmdExitCode = $cmd.ExitCode
                     $cmdId = $cmd.Id 
-                    $cmdName=$cmd.Name 
+                    $cmdHasExited=$cmd.HasExited 
+                    $cmdTotalProcessorTime=$cmd.TotalProcessorTime 
                 }
                 else{
-                    $cmd = Start-Process @startProcessParams -ArgumentList $ArgumentList| Out-null
+                    Write-Verbose -Message "RUN Start-Process Level 2"
+                    $cmd = Start-Process @startProcessParams -ArgumentList $ArgumentList
                     $cmdExitCode = $cmd.ExitCode
                     $cmdId = $cmd.Id 
-                    $cmdName=$cmd.Name 
+                    $cmdHasExited=$cmd.HasExited 
+                    $cmdTotalProcessorTime=$cmd.TotalProcessorTime 
                 }
             
             }
             else {
-                Write-Verbose $ExePath
+                Write-Verbose -Message "RUN Start-Process Level 3"
                 $cmd = Start-Process @startProcessParams
                 $cmdExitCode = $cmd.ExitCode
                 $cmdId = $cmd.Id 
-                $cmdName=$cmd.Name 
+                $cmdHasExited=$cmd.HasExited 
+                $cmdTotalProcessorTime=$cmd.TotalProcessorTime 
             }
+
+            Write-Verbose -Message "Results cmdExitCode $cmdExitCode cmdId $cmdId cmdName $cmdName"
+            Write-Verbose -Message "Results cmd $cmd"
+
+
             $stdOut = Get-Content -Path $FNameOut -Raw
             $stdErr = Get-Content -Path $FNameErr -Raw
             if ([string]::IsNullOrEmpty($stdOut) -eq $false) {
@@ -104,14 +114,16 @@ function Invoke-Process
                 $stdErr = $stdErr.Trim()
             }
             $res = [PSCustomObject]@{
-                Name            = $cmdName
-                Id              = $cmdId
-                ExitCode        = $cmdExitCode
-                Output          = $stdOut
-                Error           = $stdErr
-                ElapsedSeconds  = $stopwatch.Elapsed.Seconds
-                ElapsedMs       = $stopwatch.Elapsed.Milliseconds
+                HasExited          = $cmdHasExited
+                TotalProcessorTime = $cmdTotalProcessorTime
+                Id                 = $cmdId
+                ExitCode           = $cmdExitCode
+                Output             = $stdOut
+                Error              = $stdErr
+                ElapsedSeconds     = $stopwatch.Elapsed.Seconds
+                ElapsedMs          = $stopwatch.Elapsed.Milliseconds
             }
+            
             return $res
         }
     }
