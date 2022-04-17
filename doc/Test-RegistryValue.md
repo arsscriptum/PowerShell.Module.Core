@@ -1,6 +1,6 @@
 ---
-external help file: CodeCastor.PowerShell.Core-help.xml
-Module Name: CodeCastor.PowerShell.Core
+external help file: PowerShell.Module.Core-help.xml
+Module Name: PowerShell.Module.Core
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Test-RegistryValue [-Path] <Object> [-Entry] <Object> [<CommonParameters>]
+Test-RegistryValue [-Path] <String> [-Name] <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,13 +30,13 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Entry
-{{ Fill Entry Description }}
+### -Name
+{{ Fill Name Description }}
 
 ```yaml
 Type: Object
 Parameter Sets: (All)
-Aliases:
+Aliases: Entry
 
 Required: True
 Position: 1
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 {{ Fill Path Description }}
 
 ```yaml
-Type: Object
+Type: String
 Parameter Sets: (All)
 Aliases:
 

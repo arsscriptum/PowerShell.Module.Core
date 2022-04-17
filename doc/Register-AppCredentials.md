@@ -1,6 +1,6 @@
 ---
-external help file: CodeCastor.PowerShell.Core-help.xml
-Module Name: CodeCastor.PowerShell.Core
+external help file: PowerShell.Module.Core-help.xml
+Module Name: PowerShell.Module.Core
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,8 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Register-AppCredentials [-Id] <String> [-GlobalScope] [<CommonParameters>]
+Register-AppCredentials [-Id] <String> [-Username <String>] [-Password <String>] [-GlobalScope]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -55,6 +56,36 @@ Aliases:
 
 Required: True
 Position: 0
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Password
+{{ Fill Password Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: p
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Username
+{{ Fill Username Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: u
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

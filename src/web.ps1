@@ -56,9 +56,18 @@ function Get-ChromiumShim{
     
     
 }
+<#
+.SYNOPSIS
+    A simple Powershell script build the module files.
 
+.EXAMPLE
+    No doc
+#>
 function Invoke-OnlineCall{
-    [CmdletBinding(SupportsShouldProcess)]
+
+
+
+    [CmdletBinding()]
      param()
 
     $ChromeExe = (Get-ChromeApp)

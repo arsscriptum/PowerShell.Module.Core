@@ -1,6 +1,6 @@
 ---
-external help file: CodeCastor.PowerShell.Core-help.xml
-Module Name: CodeCastor.PowerShell.Core
+external help file: PowerShell.Module.Core-help.xml
+Module Name: PowerShell.Module.Core
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Invoke-WebSearch [-Query] <String> [-SearchEngine] [-WhatIf] [-Confirm] [<CommonParameters>]
+Invoke-WebSearch [-Query] <String> [-SearchEngine] [-Torrent] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -66,7 +66,22 @@ Accept wildcard characters: False
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases: e, engine
+Aliases: e
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Torrent
+{{ Fill Torrent Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: t
 
 Required: False
 Position: Named

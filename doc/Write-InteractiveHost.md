@@ -1,6 +1,6 @@
 ---
-external help file: CodeCastor.PowerShell.Core-help.xml
-Module Name: CodeCastor.PowerShell.Core
+external help file: PowerShell.Module.Core-help.xml
+Module Name: PowerShell.Module.Core
 online version: http://go.microsoft.com/fwlink/?LinkID=113426
 schema: 2.0.0
 ---

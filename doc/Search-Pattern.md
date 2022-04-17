@@ -1,6 +1,6 @@
 ---
-external help file: CodeCastor.PowerShell.Core-help.xml
-Module Name: CodeCastor.PowerShell.Core
+external help file: PowerShell.Module.Core-help.xml
+Module Name: PowerShell.Module.Core
 online version:
 schema: 2.0.0
 ---
@@ -13,8 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Search-Pattern [-Pattern] <Object> [-FileType <String>] [-Filter <String>] [-Path <String>] [-Recurse]
- [-OnFind <ScriptBlock>] [<CommonParameters>]
+Search-Pattern [-Pattern] <Object> [-Extension <String>] [-Path <String>] [-Recurse] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,43 +30,13 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -FileType
-{{ Fill FileType Description }}
+### -Extension
+{{ Fill Extension Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: t
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Filter
-{{ Fill Filter Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: f
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -OnFind
-{{ Fill OnFind Description }}
-
-```yaml
-Type: ScriptBlock
-Parameter Sets: (All)
-Aliases:
+Aliases: e
 
 Required: False
 Position: Named

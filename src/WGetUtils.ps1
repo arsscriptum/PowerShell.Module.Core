@@ -13,63 +13,6 @@
 #̷𝓍   Invoke-BypassPaywall <url>    -- Bypass Paywall for the Guardian
 #>
 
-
-function New-RandomFilename{
-<#
-    .SYNOPSIS
-            Create a RandomFilename 
-    .DESCRIPTION
-            Create a RandomFilename 
-#>
-
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$false)]
-        [string]$Path = "$ENV:Temp",
-        [Parameter(Mandatory=$false)]
-        [string]$Extension = 'tmp',
-        [Parameter(Mandatory=$false)]
-        [int]$MaxLen = 6,
-        [Parameter(Mandatory=$false)]
-        [switch]$CreateFile,
-        [Parameter(Mandatory=$false)]
-        [switch]$CreateDirectory
-    )    
-    try{
-        if($MaxLen -lt 4){throw "MaxLen must be between 4 and 36"}
-        if($MaxLen -gt 36){throw "MaxLen must be between 4 and 36"}
-        [string]$filepath = $Null
-        [string]$rname = (New-Guid).Guid
-        Write-Verbose "Generated Guid $rname"
-        [int]$rval = Get-Random -Minimum 0 -Maximum 9
-        Write-Verbose "Generated rval $rval"
-        [string]$rname = $rname.replace('-',"$rval")
-        Write-Verbose "replace rval $rname"
-        [string]$rname = $rname.SubString(0,$MaxLen) + '.' + $Extension
-        Write-Verbose "Generated file name $rname"
-        if($CreateDirectory -eq $true){
-            [string]$rdirname = (New-Guid).Guid
-            $newdir = Join-Path "$Path" $rdirname
-            Write-Verbose "CreateDirectory option: creating dir: $newdir"
-            $Null = New-Item -Path $newdir -ItemType "Directory" -Force -ErrorAction Ignore
-            $filepath = Join-Path "$newdir" "$rname"
-        }
-        $filepath = Join-Path "$Path" $rname
-        Write-Verbose "Generated filename: $filepath"
-
-        if($CreateFile -eq $true){
-            Write-Verbose "CreateFile option: creating file: $filepath"
-            $Null = New-Item -Path $filepath -ItemType "File" -Force -ErrorAction Ignore 
-        }
-        return $filepath
-        
-    }catch{
-        Show-ExceptionDetails $_ -ShowStack
-    }
-}
-
-
-
 function Invoke-BypassPaywall{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -191,5 +134,29 @@ function Get-RedditVideo{
     }else{
         Write-Host -n -f DarkRed "[RedditVideo] " ; Write-Host -f DarkYellow "ERROR ExitCode $ec"
     }
+}
+
+function Get-RedditVideo2{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
+        [string]$Url   
+    )
+
+    try{
+        $d = Invoke-RestMethod "$Url.json"
+        #$link = $d[0].data.children.data.secure_media.reddit_video.scrubber_media_url
+        $link = $d[0].data.children.data.secure_media.reddit_video.fallback_url
+        #$file = $link.split('/')[-1]
+        #$file = ($link.split('/')[-1]).split('?')[0]
+        $fn = New-RandomFilename -Extension 'mp4'
+        $Webclient = New-Object System.Net.WebClient
+        $Webclient.DownloadFile($link, $fn)
+        Invoke-Expression $fn
+    } catch {
+        $_.Exception.Message | Write-Warning
+        return $null
+    }
+    
 }
 
