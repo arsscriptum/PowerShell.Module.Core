@@ -850,7 +850,7 @@ class DeleteBufferItem {
     Restore() {
         if ($this.DeleteMode -eq "SendToRecycleBin") {
             if (Restore-RecycleBinItem -Name $this.Name) {
-                $global:DeleteBuffer.RemoveItem($this)
+                (Get-DeleteBuffer).RemoveItem($this)
             }
         }
         else {
@@ -861,7 +861,7 @@ class DeleteBufferItem {
     Restore([bool]$Overwrite) {
         if ($this.DeleteMode -eq "SendToRecycleBin") {
             if (Restore-RecycleBinItem -Name $this.Name -Overwrite) {
-                $global:DeleteBuffer.RemoveItem($this)
+                (Get-DeleteBuffer).RemoveItem($this)
             }
         }
         else {
@@ -872,7 +872,7 @@ class DeleteBufferItem {
     Restore([string]$DestinationPath) {
         if ($this.DeleteMode -eq "SendToRecycleBin") {
             if (Restore-RecycleBinItem -Name $this.Name -DestinationPath $DestinationPath) {
-                $global:DeleteBuffer.RemoveItem($this)
+                (Get-DeleteBuffer).RemoveItem($this)
             }
         }
         else {
@@ -883,7 +883,7 @@ class DeleteBufferItem {
     Restore([string]$DestinationPath, [bool]$Overwrite) {
         if ($this.DeleteMode -eq "SendToRecycleBin") {
             if (Restore-RecycleBinItem -Name $this.Name -DestinationPath $DestinationPath -Overwrite) {
-                $global:DeleteBuffer.RemoveItem($this)
+                (Get-DeleteBuffer).RemoveItem($this)
             }
         }
         else {
@@ -1011,7 +1011,7 @@ function Remove-ItemCustom {
             else {
                 [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($fullpath, 'OnlyErrorDialogs', $DeleteMode)
             }
-            $global:DeleteBuffer.AddItem($item.Name, $fullpath, $DeleteMode)
+            (Get-DeleteBuffer).AddItem($item.Name, $fullpath, $DeleteMode)
         }
     }
 }
@@ -1020,7 +1020,7 @@ function Undo-RemoveItemToRecycleBin {
     [alias('undo')]
     param()
     try {
-        $global:DeleteBuffer.Undo()
+        (Get-DeleteBuffer).Undo()
     }
     catch {
         Write-Error "Failed to Undo delete operation.`n$($_.Exception.Message)"
