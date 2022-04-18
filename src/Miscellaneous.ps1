@@ -515,6 +515,21 @@ function Get-UserModulesPath{
     return $null
 }
 
+function Get-ModulesDevPath{
+    
+    if(Test-Path -Path "$ENV:PSModuleDevelopmentPath" -PathType Container){
+        return "$ENV:PSModuleDevelopmentPath"
+    }
+    
+    $VarModPath=(Get-Item -Path $Profile).DirectoryName
+    $VarModPath=Join-Path $VarModPath 'Module-Development'
+    
+    if(Test-Path -Path $VarModPath -PathType Container){
+        return $VarModPath
+    }
+    return ''
+}
+
 function Get-RandomColor{                    
     [CmdletBinding()]
     param()
@@ -662,15 +677,8 @@ function Get-InvocationInformation{
         $ExecutionContext.SessionState | select *
 }
 
-function Get-CurrentModule{
-    $CurrentModule = $ExecutionContext.SessionState.Module
-    return $CurrentModule
-}
 
-
-
-function Initialize-PowershellConfig
-{
+function Initialize-CoreModule {
     [CmdletBinding(SupportsShouldProcess)]
     param ()
     try {
@@ -679,11 +687,13 @@ function Initialize-PowershellConfig
 
         $Script:CurrentPath = (Get-Location).Path
         $Script:ScriptPath = ''
+        $Script:CurrentModule = $ExecutionContext.SessionState.Module
+
         if(($Global:MyInvocation) -And ($Global:MyInvocation.MyCommand) -And ($Global:MyInvocation.MyCommand.Path)){
             $Script:ScriptPath  = Split-Path $Global:MyInvocation.MyCommand.Path
         }
         $Script:PwshPath = (Get-Item ((Get-Command pwsh.exe).Source)).DirectoryName
-        $Script:RegistryPath = "$ENV:OrganizationHKCU\powershell"
+        $Script:RegistryPath = "$ENV:OrganizationHKCU\$Script:CurrentModule"
         $Script:Edition=$PSVersionTable.PSEdition.ToString()
         $Script:Version=$PSVersionTable.PSVersion.ToString()
         $Script:Paths = (Get-ModulePath | where Writeable -eq $True).Path
@@ -750,74 +760,6 @@ function New-TemporaryDirectory
     Write-Verbose  "Creating temporary directory: $tempFolderPath"
     New-Item -ItemType Directory -Path $tempFolderPath
 }
-
-function Write-InteractiveHost
-{
-<#
-    .SYNOPSIS
-        Forwards to Write-Host only if the host is interactive, else does nothing.
-
-    .DESCRIPTION
-        A proxy function around Write-Host that detects if the host is interactive
-        before calling Write-Host. Use this instead of Write-Host to avoid failures in
-        non-interactive hosts.
-
-        The Git repo for this module can be found here: http://aka.ms/PowerShellForGitHub
-
-    .EXAMPLE
-        Write-InteractiveHost "Test"
-        Write-InteractiveHost "Test" -NoNewline -f Yellow
-
-    .NOTES
-        Boilerplate is generated using these commands:
-        # $Metadata = New-Object System.Management.Automation.CommandMetaData (Get-Command Write-Host)
-        # [System.Management.Automation.ProxyCommand]::Create($Metadata) | Out-File temp
-#>
-
-    [CmdletBinding(
-        HelpUri='http://go.microsoft.com/fwlink/?LinkID=113426',
-        RemotingCapability='None')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="This provides a wrapper around Write-Host. In general, we'd like to use Write-Information, but it's not supported on PS 4.0 which we need to support.")]
-    param(
-        [Parameter(
-            Position=0,
-            ValueFromPipeline,
-            ValueFromRemainingArguments)]
-        [System.Object] $Object,
-
-        [switch] $NoNewline,
-
-        [System.Object] $Separator,
-
-        [System.ConsoleColor] $ForegroundColor,
-
-        [System.ConsoleColor] $BackgroundColor
-    )
-
-    begin
-    {
-        $hostIsInteractive = ([Environment]::UserInteractive -and
-            ![Bool]([Environment]::GetCommandLineArgs() -like '-noni*') -and
-            ((Get-Host).Name -ne 'Default Host'))
-    }
-
-    process
-    {
-        # Determine if the host is interactive
-        if ($hostIsInteractive)
-        {
-            # Special handling for OutBuffer (generated for the proxy function)
-            $outBuffer = $null
-            if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer))
-            {
-                $PSBoundParameters['OutBuffer'] = 1
-            }
-
-            Write-Host @PSBoundParameters
-        }
-    }
-}
-
 
 function Get-SHA512Hash
 {
@@ -934,12 +876,3 @@ function Invoke-CommandForEach{
     }
 }
 
-
-function New-FunctionDemoForAlexForHimself{
-
-    Write-Host -f DarkBlue -n "[NEW FUNCTION ALEX] "
-    Write-Host -f DarkYellow " Bla Bla"
-
-    Write-Host "A FIX" -f DarkYellow
-
-}

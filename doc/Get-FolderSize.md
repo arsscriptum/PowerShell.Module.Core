@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Find-Item
+# Get-FolderSize
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Item [-SearchString] <String> [[-SearchType] <String>] [[-Depth] <Int32>] [<CommonParameters>]
+Get-FolderSize [[-path] <String>] [-descending] [[-sizeFormat] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,44 +30,44 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Depth
-{{ Fill Depth Description }}
+### -descending
+{{ Fill descending Description }}
 
 ```yaml
-Type: Int32
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SearchString
-{{ Fill SearchString Description }}
+### -path
+{{ Fill path Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 0
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -SearchType
-{{ Fill SearchType Description }}
+### -sizeFormat
+{{ Fill sizeFormat Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
-Accepted values: Any, All
+Accepted values: Auto, KB, MB, GB, TB
 
 Required: False
 Position: 1
@@ -81,7 +81,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### System.String
 
 ## OUTPUTS
 

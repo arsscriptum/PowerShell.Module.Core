@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Find-Item
+# Convert-Bytes
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Item [-SearchString] <String> [[-SearchType] <String>] [[-Depth] <Int32>] [<CommonParameters>]
+Convert-Bytes [[-int] <Object>] [[-format] <String>] [[-decimalPlaces] <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,13 +30,14 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Depth
-{{ Fill Depth Description }}
+### -decimalPlaces
+{{ Fill decimalPlaces Description }}
 
 ```yaml
 Type: Int32
 Parameter Sets: (All)
 Aliases:
+Accepted values: 0, 1, 2, 3, 4
 
 Required: False
 Position: 2
@@ -45,29 +46,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SearchString
-{{ Fill SearchString Description }}
+### -format
+{{ Fill format Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
-
-Required: True
-Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchType
-{{ Fill SearchType Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-Accepted values: Any, All
+Accepted values: Auto, KB, MB, GB, TB
 
 Required: False
 Position: 1
@@ -76,12 +62,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -int
+{{ Fill int Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 0
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### None
+### System.Object
 
 ## OUTPUTS
 

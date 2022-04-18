@@ -495,6 +495,26 @@ function Sync-Directories {
 }
 
 
+function Get-FolderSize {
+    # This returns a list of all files/folders within the $path (default is current folder) and adds the total size up into human readable format.
+    param(
+        [parameter(ValueFromPipeline)][string]$path = ".\",
+        [switch]$descending,
+        [ValidateSet("Auto", "KB", "MB", "GB", "TB")][string]$sizeFormat = "Auto"
+    )    
+    
+    $sortOptions = @{
+        Property   = "Size"
+        Descending = $descending
+    }
+    
+    $results = Get-ChildItem $path | Select-Object Name, @{N = "Type"; E = { if ($_.PSIsContainer) { "Folder" }else { "File" } } }, @{N = "Size"; E = { if ($_.PSIsContainer) { ((Get-ChildItem $_ -Recurse | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum) }else { (($_ | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum) } } }
+    $totalSize = ($results | Measure-Object -Sum Size).Sum
+    Write-Output ($results | Sort-Object @sortOptions | Select-Object -ExcludeProperty Size *, @{N = "Size"; E = { ConvertBytes $_.Size $sizeFormat } } | Out-String).Trim()
+    Write-Output "`nTotal Size: $(ConvertBytes $totalSize $sizeFormat)"
+}
+
+
 function Compare-Directories {
 
     <#

@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Find-Item
+# Install-ChocoApp
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Item [-SearchString] <String> [[-SearchType] <String>] [[-Depth] <Int32>] [<CommonParameters>]
+Install-ChocoApp [-App] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,23 +30,8 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Depth
-{{ Fill Depth Description }}
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchString
-{{ Fill SearchString Description }}
+### -App
+{{ Fill App Description }}
 
 ```yaml
 Type: String
@@ -55,22 +40,6 @@ Aliases:
 
 Required: True
 Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchType
-{{ Fill SearchType Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-Accepted values: Any, All
-
-Required: False
-Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

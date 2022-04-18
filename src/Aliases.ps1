@@ -1,6 +1,6 @@
 <#
-#̷\   ⼕龱ᗪ㠪⼕闩丂ㄒ龱尺 ᗪ㠪ᐯ㠪㇄龱尸爪㠪𝓝ㄒ
-#̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
+#̷𝓍   𝓐𝓡𝓢 𝓢𝓒𝓡𝓘𝓟𝓣𝓤𝓜
+#̷𝓍   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇬​​​​​🇺​​​​​🇮​​​​​🇱​​​​​🇱​​​​​🇦​​​​​🇺​​​​​🇲​​​​​🇪​​​​​🇵​​​​​🇱​​​​​🇦​​​​​🇳​​​​​🇹​​​​​🇪​​​​​.🇶​​​​​🇨​​​​​@🇬​​​​​🇲​​​​​🇦​​​​​🇮​​​​​🇱​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
 #>
 
 #===============================================================================
@@ -8,8 +8,6 @@
 #===============================================================================
 
 New-Alias -Name ra -Value Register-Assemblies -Scope Global -ErrorAction Ignore -Force
-
-
 
 #===============================================================================
 # Battery.ps1
@@ -25,7 +23,6 @@ New-Alias -Name datestr -Value Get-DateString -Scope Global -ErrorAction Ignore 
 New-Alias -Name ctime -Value Get-Date -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name epoch -Value Get-UnixTime -Scope Global -ErrorAction Ignore -Force
 
-
 #===============================================================================
 # Directory.ps1
 #===============================================================================
@@ -36,18 +33,25 @@ New-Alias -Name rsync -Value Sync-Directories -Scope Global -ErrorAction Ignore 
 New-Alias -Name dirdiff -Value Compare-Directories -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name dircomp -Value Compare-Directories -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name foreachdir -Value Invoke-ForEachChilds -Scope Global -ErrorAction Ignore -Force
-
+New-Alias -Name fs -Value Get-FolderSize -Scope Global -ErrorAction Ignore -Force
 
 #===============================================================================
 # Credential.ps1
 #===============================================================================
-
-
 New-Alias -Name Register-UserCredentials -Value Register-AppCredentials -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name Register-CustomCredentials -Value Register-AppCredentials -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name Register-Creds -Value Register-AppCredentials -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name Register-ApplicationCredentials -Value Register-AppCredentials -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name Get-AdminCreds -Value Get-ElevatedCredential -Scope Global -ErrorAction Ignore -Force
+
+#===============================================================================
+# Log.ps1
+#===============================================================================
+New-Alias -Name log -Value Write-Log -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name logs -Value Write-LogSuccess -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name logf -Value Write-LogError -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name logexcept -Value Write-LogException -Scope Global -ErrorAction Ignore -Force
+
 
 #===============================================================================
 # MessabeBox.ps1
@@ -99,3 +103,44 @@ New-Alias -Name web -Value Invoke-StartWeb -Description "Open a page for each ad
 
 New-Alias -Name parserepourl -value Split-RepositoryUrl -Force
 New-Alias -Name parseurl -value Split-Url -Force
+
+
+#===============================================================================
+# System.ps1
+#===============================================================================
+
+New-Alias -Name dirhash -Value Get-FolderHash -Scope Global -ErrorAction Ignore -Force
+
+New-Alias -Name isadmin -Value Get-CurrentContext -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name elevate -Value Invoke-ElevateContext -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name wifispeed -Value Get-WlanSpeed -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name wlanspeed -Value Get-WlanSpeed -Scope Global -ErrorAction Ignore -Force
+
+
+New-Alias -Name newpasswd -Value New-Password -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name split -Value Split-Array -Scope Global -ErrorAction Ignore -Force
+
+New-Alias -Name countdown -Value Start-Countdown -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name isnull -Value Confirm-IsNullOrEmpty -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name co -Value Copy-Object -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name split -Value Split-Array -Scope Global -ErrorAction Ignore -Force
+
+New-Alias -Name split -Value Split-Array -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name count -Value Measure-Count -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name chrono -Value Measure-TimeTaken -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name islock -Value Test-FileLock -Scope Global -ErrorAction Ignore -Force
+
+
+New-Alias -Name df -Value Remove-FileFolder -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name md5 -Value Get-MD5 -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name dbits -Value Get-DownloadViaBits -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name download -Value Get-DownloadViaBits -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name deleteBuffer -Value Get-DeleteBuffer -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name rm -Value Remove-ItemCustom -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name rmf -Value Remove-ItemCustom -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name fbytes -Value Convert-Bytes -Scope Global -ErrorAction Ignore -Force
+
+
+
+
+

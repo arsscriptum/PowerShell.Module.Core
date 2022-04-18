@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Find-Item
+# Get-HttpWebResponseContent
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Item [-SearchString] <String> [[-SearchType] <String>] [[-Depth] <Int32>] [<CommonParameters>]
+Get-HttpWebResponseContent [[-WebResponse] <HttpWebResponse>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,47 +30,16 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Depth
-{{ Fill Depth Description }}
+### -WebResponse
+{{ Fill WebResponse Description }}
 
 ```yaml
-Type: Int32
+Type: HttpWebResponse
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchString
-{{ Fill SearchString Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
 Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchType
-{{ Fill SearchType Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-Accepted values: Any, All
-
-Required: False
-Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -85,7 +54,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Object
+### System.String
+
 ## NOTES
 
 ## RELATED LINKS

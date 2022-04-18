@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Find-Item
+# Get-DownloadViaBits
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Find-Item [-SearchString] <String> [[-SearchType] <String>] [[-Depth] <Int32>] [<CommonParameters>]
+Get-DownloadViaBits [-From] <Object> [[-To] <Object>] [[-ProgressDelayMs] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,26 +30,11 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Depth
-{{ Fill Depth Description }}
+### -From
+{{ Fill From Description }}
 
 ```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SearchString
-{{ Fill SearchString Description }}
-
-```yaml
-Type: String
+Type: Object
 Parameter Sets: (All)
 Aliases:
 
@@ -60,14 +45,28 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SearchType
-{{ Fill SearchType Description }}
+### -ProgressDelayMs
+{{ Fill ProgressDelayMs Description }}
 
 ```yaml
-Type: String
+Type: Object
 Parameter Sets: (All)
 Aliases:
-Accepted values: Any, All
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -To
+{{ Fill To Description }}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
 
 Required: False
 Position: 1
