@@ -167,36 +167,68 @@ function Get-OnlineStringNoCache{
     Log-String "NetGetStringNoCache: Requesting $RequestUrl"
     $client.DownloadString($RequestUrl)
 }
-# SIG # Begin signature block
-# MIIFxAYJKoZIhvcNAQcCoIIFtTCCBbECAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7lfNi0luS3ENwxIRu7eIOQVY
-# Sg6gggNNMIIDSTCCAjWgAwIBAgIQmkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCHQUA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
-# Fw0yMjAyMDkyMzI4NDRaFw0zOTEyMzEyMzU5NTlaMCUxIzAhBgNVBAMTGkFyc1Nj
-# cmlwdHVtIFBvd2VyU2hlbGwgQ1NDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-# CgKCAQEA60ec8x1ehhllMQ4t+AX05JLoCa90P7LIqhn6Zcqr+kvLSYYp3sOJ3oVy
-# hv0wUFZUIAJIahv5lS1aSY39CCNN+w47aKGI9uLTDmw22JmsanE9w4vrqKLwqp2K
-# +jPn2tj5OFVilNbikqpbH5bbUINnKCDRPnBld1D+xoQs/iGKod3xhYuIdYze2Edr
-# 5WWTKvTIEqcEobsuT/VlfglPxJW4MbHXRn16jS+KN3EFNHgKp4e1Px0bhVQvIb9V
-# 3ODwC2drbaJ+f5PXkD1lX28VCQDhoAOjr02HUuipVedhjubfCmM33+LRoD7u6aEl
-# KUUnbOnC3gVVIGcCXWsrgyvyjqM2WQIDAQABo3YwdDATBgNVHSUEDDAKBggrBgEF
-# BQcDAzBdBgNVHQEEVjBUgBD8gBzCH4SdVIksYQ0DovzKoS4wLDEqMCgGA1UEAxMh
-# UG93ZXJTaGVsbCBMb2NhbCBDZXJ0aWZpY2F0ZSBSb290ghABvvi0sAAYvk29NHWg
-# Q1DUMAkGBSsOAwIdBQADggEBAI8+KceC8Pk+lL3s/ZY1v1ZO6jj9cKMYlMJqT0yT
-# 3WEXZdb7MJ5gkDrWw1FoTg0pqz7m8l6RSWL74sFDeAUaOQEi/axV13vJ12sQm6Me
-# 3QZHiiPzr/pSQ98qcDp9jR8iZorHZ5163TZue1cW8ZawZRhhtHJfD0Sy64kcmNN/
-# 56TCroA75XdrSGjjg+gGevg0LoZg2jpYYhLipOFpWzAJqk/zt0K9xHRuoBUpvCze
-# yrR9MljczZV0NWl3oVDu+pNQx1ALBt9h8YpikYHYrl8R5xt3rh9BuonabUZsTaw+
-# xzzT9U9JMxNv05QeJHCgdCN3lobObv0IA6e/xTHkdlXTsdgxggHhMIIB3QIBATBA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdAIQ
-# mkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAig
-# AoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgEL
-# MQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUQNVLV92E5JqaTrFQaZAC
-# S1RCDKMwDQYJKoZIhvcNAQEBBQAEggEA2Fsf2ggaNphe/9qJKH1GIQrqvT5xaShg
-# 0SdALgv/0122YKDgVKzAuDbPLULt8CIlf9PcyTrP2AURYcxQ5mmfgVLPn8slh5PZ
-# qnVSv8YA8s426QuEtKqoAULgguPf9iKXESVCy1hxaPgQAu5p3C4hu4ymBWRyc2PQ
-# AJikCzJ/hgcXRMv5iNS3/on/LrP1ZloyrrrzBDEtHqDOGmAwIjCJFMY1/jPLcCMa
-# UTYtUbJiiIpJ16iuOeQXiqC69Tx7zA3TLqN6V0lB1Y+O7w4FtjtZlmrCJYr4ExH5
-# B+iK7JWXBia9HJ4N1fUCwUrv+las46Ez5x5jodaG7aHhVyINW8HAjg==
-# SIG # End signature block
+
+
+function Invoke-DownloadFileWithProgress{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$True, Position=0)]
+        [string]$Url,
+        [Parameter(Mandatory=$True, Position=1)]
+        [string]$DestinationPath    
+    ) 
+  try{
+    new-item -path $DestinationPath -ItemType 'File' -Force | Out-Null
+    remove-item -path $DestinationPath -Force | Out-Null
+
+    $Script:ProgressTitle = 'STATE: DOWNLOAD'
+    $uri = New-Object "System.Uri" "$Url"
+    $request = [System.Net.HttpWebRequest]::Create($Url)
+    $request.PreAuthenticate = $false
+    $request.Method = 'GET'
+
+
+    $request.Headers.Add('User-Agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36')
+    $request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+    $request.KeepAlive = $true
+    $request.Timeout = ($TimeoutSec * 1000)
+    $request.set_Timeout(15000) #15 second timeout
+
+    $response = $request.GetResponse()
+
+    $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
+    $totalLengthBytes = [System.Math]::Floor($response.get_ContentLength())
+    $responseStream = $response.GetResponseStream()
+    $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $DestinationPath, Create
+    $buffer = new-object byte[] 10KB
+    $count = $responseStream.Read($buffer,0,$buffer.length)
+    $dlkb = 0
+    $downloadedBytes = $count
+    $script:steps = $totalLength
+    while ($count -gt 0){
+       $targetStream.Write($buffer, 0, $count)
+       $count = $responseStream.Read($buffer,0,$buffer.length)
+       $downloadedBytes = $downloadedBytes + $count
+       $dlkb = $([System.Math]::Floor($downloadedBytes/1024))
+       $msg = "Downloaded $dlkb Kb of $totalLength Kb"
+       $perc = (($downloadedBytes / $totalLengthBytes)*100)
+       if(($perc -gt 0)-And($perc -lt 100)){
+         Write-Progress -Activity $Script:ProgressTitle -Status $msg -PercentComplete $perc 
+       }
+    }
+
+    $targetStream.Flush()
+    $targetStream.Close()
+    $targetStream.Dispose()
+    $responseStream.Dispose()
+  }catch{
+    Write-Error $_
+    return $false
+
+  }finally{
+    Write-Progress -Activity $Script:ProgressTitle -Completed
+    Write-verbose "Downloaded $Url"
+  }
+
+  return
+}

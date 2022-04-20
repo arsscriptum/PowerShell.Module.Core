@@ -1,11 +1,9 @@
+
 <#
-  ╓──────────────────────────────────────────────────────────────────────────────────────
-  ║   PowerShell.Module.WindowsHosts
-  ║   𝑊𝑖𝑛𝑑𝑜𝑤𝑠 𝐻𝑂𝑆𝑇𝑆 𝑓𝑖𝑙𝑒 𝑚𝑎𝑛𝑎𝑔𝑒𝑚𝑒𝑛𝑡              
-  ║   
-  ║   miscelaneous.ps1: misc functs
-  ╙──────────────────────────────────────────────────────────────────────────────────────
- #>
+#̷𝓍   𝓐𝓡𝓢 𝓢𝓒𝓡𝓘𝓟𝓣𝓤𝓜
+#̷𝓍   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇬​​​​​🇺​​​​​🇮​​​​​🇱​​​​​🇱​​​​​🇦​​​​​🇺​​​​​🇲​​​​​🇪​​​​​🇵​​​​​🇱​​​​​🇦​​​​​🇳​​​​​🇹​​​​​🇪​​​​​.🇶​​​​​🇨​​​​​@🇬​​​​​🇲​​​​​🇦​​​​​🇮​​​​​🇱​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
+#>
+
 
 function Export-RegistryItem{
     [CmdletBinding(SupportsShouldProcess)]
@@ -301,13 +299,18 @@ function Format-RegistryPath
         }
 
         if($ENV:TestRegistryFormat){
-             $Source = "https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/Placeholder/img/55.jpg"
+
+            $SourceUrl = "https://onebeatblog.files.wordpress.com/2013/04/hiatus.jpg"
+            $SourceLocal = "$ENV:MyPictures\standby.jpg"
+            if(-not(Test-Path $SourceLocal)){
+                Get-OnlineFileNoCache -Url $SourceUrl -Path $SourceLocal
+            }
             [int]$FontSize = 16
-            [string]$Color='DimGray'
+            [string]$Color='Red'
             $Image = New-Object System.Windows.Controls.Image
-            $Image.Source = $Source
-            $Image.Height = [System.Drawing.Image]::FromFile($Source).Height / 8
-            $Image.Width = [System.Drawing.Image]::FromFile($Source).Width / 8
+            $Image.Source = $SourceLocal
+            $Image.Height = [System.Drawing.Image]::FromFile($SourceLocal).Height 
+            $Image.Width = [System.Drawing.Image]::FromFile($SourceLocal).Width 
                  
             Show-MessageBox -Content $Image -Title "Hive is $Hive" -TitleFontWeight "Bold" -TitleBackground "$Color" -TitleTextForeground Black -TitleFontSize $FontSize -ContentBackground "$Color" -ContentFontSize ($FontSize-10) -ButtonTextForeground 'Black' -ContentTextForeground 'White'        
         }

@@ -57,6 +57,9 @@ New-Alias -Name logexcept -Value Write-LogException -Scope Global -ErrorAction I
 # MessabeBox.ps1
 #===============================================================================
 New-Alias -Name msgbox -Value Show-MessageBox -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name msgboxerr -Value Show-MessageBoxError -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name msgboxinf -Value Show-MessageBoxInfo -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name standby -Value Show-MessageBoxStandby -Scope Global -ErrorAction Ignore -Force
 
 #===============================================================================
 # Miscellaneous.ps1
