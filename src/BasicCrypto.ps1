@@ -54,17 +54,14 @@ function Get-4KHash{
 }
 
 
-function Test-Machine-Identification
-{
+function Test-MachineIdentification {
     $Result=Get-4KHash
-    Write-Host '[Test-Machine-Identification]' -f Red -b Yellow -NoNewLine; Write-Host "`t`t[Get-4KHash]" -f Yellow -b Magenta 
-    Write-Host "$Result" -f White
+    Write-Host '[PcId 4KHash]' -f DarkRed -NoNewLine; Write-Host "$Result" -f White
     $Result=Get-MachineCryptoGuid
-    Write-Host '[Test-Machine-Identification]' -f Red -b Yellow -NoNewLine; Write-Host "`t`t[Get-MachineCryptoGuid]" -f Yellow -b Magenta 
-    Write-Host "$Result" -f White
+    Write-Host '[PcId MachineCryptoGuid]' -f DarkRed -NoNewLine; Write-Host "$Result" -f White        
     $Result=Get-SystemUUID
-    Write-Host '[Test-Machine-Identification]' -f Red -b Yellow -NoNewLine; Write-Host "`t`t[Get-SystemUUID]" -f Yellow -b Magenta 
-    Write-Host "$Result" -f White
+    Write-Host '[PcId SystemUUID]' -f DarkRed -NoNewLine; Write-Host "$Result" -f White
+    
 }
 
 Function Get-PossiblePasswordList{
@@ -358,6 +355,8 @@ Function Decrypt-String {
         Write-Error $_
     }
 }
+
+
 
 Function Encrypt-String {
     [CmdletBinding(SupportsShouldProcess)]
