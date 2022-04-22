@@ -104,14 +104,14 @@ function Get-FunctionList {
         [switch]$All
     )
 
-    
+    $FunctionPattern = "function\s\w+-\w+"
     $IsFile = Test-Path -PathType Leaf -Path $Path
     $IsDirectory = Test-Path -PathType Container -Path $Path
     $TotalFnList = [System.Collections.ArrayList]::new()
     if($IsDirectory){
-         $StrList = ( Get-ChildItem -Path $Path -Filter '*.ps1' | Select-String -Pattern "function\s\w+-\w+" )  # This will get a list of all the lines starting with 'function' followed by a space, then a word, then a '-' and a word. 
+         $StrList = ( Get-ChildItem -Path $Path -Filter '*.ps1' | Select-String -Pattern $FunctionPattern )  # This will get a list of all the lines starting with 'function' followed by a space, then a word, then a '-' and a word. 
     }else{
-         $StrList = ( Get-Content -Path $Path | Select-String -Pattern "function\s\w+-\w+" ) 
+         $StrList = ( Get-Content -Path $Path | Select-String -Pattern $FunctionPattern ) 
     }
    
     ForEach ( $fn in $StrList){
