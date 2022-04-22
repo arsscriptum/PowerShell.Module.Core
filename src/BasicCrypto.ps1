@@ -253,7 +253,9 @@ function Invoke-AESEncryption {
                 if ($Text) {return [System.Convert]::ToBase64String($encryptedBytes)}
                 
                 if ($Path) {
-                    [System.IO.File]::WriteAllBytes($outPath, $encryptedBytes)
+                    $B64Cipher=[System.Convert]::ToBase64String($encryptedBytes)
+                    Set-Content -Path $outPath -Value $B64Cipher
+                    #[System.IO.File]::WriteAllBytes($outPath, $encryptedBytes)
                     (Get-Item $outPath).LastWriteTime = $File.LastWriteTime
                     return $outPath
                 }
@@ -262,13 +264,15 @@ function Invoke-AESEncryption {
             'Decrypt' {
                 if ($Text) {$cipherBytes = [System.Convert]::FromBase64String($Text)}
                 
-                if ($Path) {
+               if ($Path) {
                     $File = Get-Item -Path $Path -ErrorAction SilentlyContinue
                     if (!$File.FullName) {
                         Write-Error -Message "File not found!"
                         break
                     }
-                    $cipherBytes = [System.IO.File]::ReadAllBytes($File.FullName)
+                    #$cipherBytes = [System.IO.File]::ReadAllBytes($File.FullName)
+                    $B64Cipher = Get-Content $File.FullName
+                    $cipherBytes=[System.Convert]::FromBase64String($B64Cipher)
                     $outPath = $File.FullName -replace ".aes"
                 }
 
