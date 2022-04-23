@@ -85,6 +85,13 @@ New-Alias -Name find -Value Find-Item -Scope Global -ErrorAction Ignore -Force
 New-Alias -Name search -Value Search-Item -Scope Global -ErrorAction Ignore -Force
 
 #===============================================================================
+# SelectAudioDevice.ps1
+#===============================================================================
+New-Alias -Name headset -Value Select-AudioHeadset -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name jabra -Value Select-AudioExternal -Scope Global -ErrorAction Ignore -Force
+New-Alias -Name setaudio -Value Select-AudioDevice -Scope Global -ErrorAction Ignore -Force
+
+#===============================================================================
 # Sudo.ps1
 #===============================================================================
 New-Alias -Name sudo -Value Invoke-ElevatedPrivilege -Scope Global -ErrorAction Ignore -Force

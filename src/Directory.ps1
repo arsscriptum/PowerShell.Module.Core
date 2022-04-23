@@ -316,7 +316,7 @@ function Sync-Directories {
        Sync-Directories $src $dst -Test
 #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [ValidateScript({
             if(-Not ($_ | Test-Path) ){
@@ -342,10 +342,7 @@ function Sync-Directories {
         [String]$Log="",
         [Parameter(Mandatory=$false)]
         [Alias('b')]
-        [switch]$BackupMode,
-        [Parameter(Mandatory=$false)]
-        [switch]$Test        
-        
+        [switch]$BackupMode
     )
 
     try{
@@ -396,9 +393,9 @@ function Sync-Directories {
             $ArgumentList += " /V"
         }
 
-        if (($PSBoundParameters.ContainsKey('Test')) -Or ($Test)) {
+        if (($PSBoundParameters.ContainsKey('WhatIf')) -Or ($WhatIf)) {
             Write-Host '[ROBOCOPY] ' -f DarkRed -NoNewLine
-            Write-Host "Test : Simulation; List only - don't copy, timestamp or delete any files." -f Yellow            
+            Write-Host "WhatIf : Simulation; List only - don't copy, timestamp or delete any files." -f Yellow            
             $ArgumentList += " /L"
         }
 
