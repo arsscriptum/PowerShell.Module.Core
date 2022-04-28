@@ -232,3 +232,117 @@ function Invoke-DownloadFileWithProgress{
 
   return
 }
+
+
+function Get-DnsCacheServiceStatus{
+    [CmdletBinding(SupportsShouldProcess)]
+    param() 
+  try{
+    <#
+        0 = Boot
+        1 = System
+        2 = Automatic
+        3 = Manual
+        4 = Disabled
+    #>
+    
+    $RegistryPath = 'HKLM:\System\CurrentControlSet\Services\dnsclient'
+    $state = Get-RegistryValue $RegistryPath -Name 'Start'
+
+    Write-Host -n -f DarkYellow "[DNSCLIENT CACHE] Startup Mode: "
+    Switch ($state)
+    {
+        0 { Write-Host -f DarkRed "Boot" }
+        1 { Write-Host -f DarkRed "System" }
+        2 { Write-Host -f DarkRed "Automatic" }
+        3 { Write-Host -f Red "Manual" }
+        4 { Write-Host -f DarkGreen "Disabled" }
+    }
+
+  }catch{
+    Write-Error $_
+    return $false
+
+  }
+  
+  return $Res
+}
+
+
+
+function Return-DnsCacheServiceDll{
+    [cmdletbinding()]
+    Param()
+    try{
+        $DNSCacheDll="$ENV:SystemRoot\System32\dnsapi.dll"
+        $DNSCacheDllBackup="$ENV:SystemRoot\System32\IMPORTANT_BACKUPS\dnsapi.bak"
+        if(Test-PAth $DNSCacheDllBackup){
+            Write-Log "Move $DNSCacheDllBackup to $DNSCacheDll"
+            Move-Item "$DNSCacheDllBackup" "$DNSCacheDll"
+        }      
+        Write-MOk "Success"
+        return
+    }catch{
+        Show-ExceptionDetails $_
+    }
+}
+
+function Replace-DnsCacheServiceDll{
+    [cmdletbinding()]
+    Param()
+    try{
+        $DNSCacheDll="$ENV:SystemRoot\System32\dnsapi.dll"
+        if(Test-PAth $DNSCacheDll){
+            Write-Log "New Directory $ENV:SystemRoot\System32\IMPORTANT_BACKUPS"
+            $Null = New-Item -PAth "$ENV:SystemRoot\System32\IMPORTANT_BACKUPS" -ItemType "Directory" -Force
+            Grant-Ownership "$ENV:SystemRoot\System32\IMPORTANT_BACKUPS" -Force -Recurse
+            Write-Log "Grant-Ownership to $DNSCacheDll"
+            Grant-Ownership "$DNSCacheDll" -Force
+            Write-Log "Move $DNSCacheDll to IMPORTANT_BACKUPS"
+            Move-Item "$DNSCacheDll" "$ENV:SystemRoot\System32\IMPORTANT_BACKUPS\dnsapi.bak"
+        }      
+        Write-MOk "Success"
+        return
+    }catch{
+        Show-ExceptionDetails $_
+    }
+}
+
+function Enable-DnsCacheService{
+    [cmdletbinding()]
+    Param()
+    try{
+        $Res = Set-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache" 'Start' -Value 2 -Type DWORD
+        if(!$Res){
+            throw 'failed to set registry value'    
+        }        
+        Write-MOk "Success"
+        return
+    }catch{
+        Show-ExceptionDetails $_
+    }
+}
+
+function Remove-DnsCache{
+    [cmdletbinding()]
+    param(
+        [Parameter(Mandatory=$False)]
+        [switch]$HideDll
+    ) 
+    try{
+        $Res = Set-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache" 'Start' -Value 4 -Type DWORD
+        if(!$Res){
+            throw 'failed to set registry value'    
+        }        
+        Write-MOk "Success"
+        if($HideDll){
+            Replace-DnsCacheServiceDll
+        }
+        return
+    }catch{
+        Show-ExceptionDetails $_
+    }
+}
+
+
+

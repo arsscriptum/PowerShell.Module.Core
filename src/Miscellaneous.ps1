@@ -449,6 +449,31 @@ function Deploy-CustomModule{
     }
 }
 
+
+
+function Show-CoreFuncts{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    ()     
+    $ModulePath = 'C:\DOCUMENTS\PowerShell\Module-Development\PowerShell.Module.Core'
+    $SourcePath = Join-Path $ModulePath 'src'
+    $READMEPath = Join-Path $ModulePath 'README_Test.md'
+    #Push-Location $Path
+    $FList = Get-FunctionList $SourcePath
+    $Groups = (Get-FunctionList src | select Base -Unique).Base
+    $Groups.ForEach({
+        $g = $_
+        $Formatted = $FList| where Base -match $g | sort -Property Name | fw  -Autosize | Out-String
+        $FunctionsCount = ($FList| where Base -match $g ).Count 
+        Add-Content -Path $READMEPath -Value "------------------------------------`n"
+        Add-Content -Path $READMEPath -Value "### __ $g __ ($FunctionsCount)"
+        Add-Content -Path $READMEPath -Value "$Formatted"
+       
+    })
+}
+
+
+
 function Show-Verbs{
     [CmdletBinding(SupportsShouldProcess)]
     Param
