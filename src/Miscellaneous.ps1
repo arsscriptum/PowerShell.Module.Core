@@ -480,6 +480,7 @@ function Show-CoreFunctionsHtml{
     $ModulePath = 'C:\DOCUMENTS\PowerShell\Module-Development\PowerShell.Module.Core'
     $SourcePath = Join-Path $ModulePath 'src'
     $HtmlPath = Join-Path $ModulePath 'Functions.html'
+    $READMEPath = Join-Path $ModulePath 'README.md'
 
     $Header = @"
 <style>
@@ -490,8 +491,10 @@ TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
 "@
 
     Get-FunctionList $SourcePath  | ConvertTo-Html -Property Base, Name  -Head $Header| Out-File -FilePath $HtmlPath
-    $BrowserExe = (Get-ChromeApp)
-    start-process "$BrowserExe" -ArgumentList "$HtmlPath" 
+    #$BrowserExe = (Get-ChromeApp)
+    #start-process "$BrowserExe" -ArgumentList "$HtmlPath" 
+    $Content = Get-Content -Path $HtmlPath
+    Add-Content -Path $READMEPath -Value $Content
 }
 
 
