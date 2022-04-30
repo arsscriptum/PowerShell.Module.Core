@@ -14,16 +14,12 @@ View [generated documentation](https://github.com/arsscriptum/PowerShell.Module.
 
 ## Modules
 
-View [functions list](https://github.com/arsscriptum/PowerShell.Module.Core/tree/master/Functions.html)
+View Functions list
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<style>
-TABLE {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;}
-TH {border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #6495ED;}
-TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
-</style>
+
 </head><body>
 <table>
 <colgroup><col/><col/></colgroup>
