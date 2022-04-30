@@ -1,20 +1,20 @@
 ------------------------------------
 
-### __ Archive __ (2)
+### __Archive__ (2)
 
 Backup-Profile    Get-BackupFolder                                                                      
 
 
 ------------------------------------
 
-### __ Assemblies __ (4)
+### __Assemblies__ (4)
 
 Add-AssemblyReference    New-AssemblyReferences  Register-Assemblies     Show-AssemblyReferences 
 
 
 ------------------------------------
 
-### __ BasicCrypto __ (20)
+### __BasicCrypto__ (20)
 
 Check-Version                  Decrypt-SecureString          Decrypt-String                Encrypt-String
 Get-4KHash                     Get-MachineCryptoGuid         Get-PossiblePasswordList      Get-SystemUUID
@@ -25,21 +25,21 @@ Test-InvokeAesFile             Test-JsonCrypto               Test-MachineIdentif
 
 ------------------------------------
 
-### __ Converter __ (3)
+### __Converter__ (3)
 
 Convert-FromBase64CompressedScriptBlock  Convert-ToBase64CompressedScriptBlock   Convert-ToPreCompiledScript
 
 
 ------------------------------------
 
-### __ CopyDirectoryTree __ (1)
+### __CopyDirectoryTree__ (1)
 
 Copy-DirectoryTree                                                                                   
 
 
 ------------------------------------
 
-### __ Credential __ (6)
+### __Credential__ (6)
 
 Get-AppCredentials             Get-CoreModuleRegistryPath    Get-CredentialsRegistryPath   Get-ElevatedCredential
 Register-AppCredentials        Show-RegisteredCredentials                                  
@@ -47,7 +47,7 @@ Register-AppCredentials        Show-RegisteredCredentials
 
 ------------------------------------
 
-### __ Date __ (7)
+### __Date__ (7)
 
 ConvertFrom-Ctime        ConvertFrom-UnixTime    ConvertTo-CTime         ConvertTo-UnixTime      Get-DateFormat
 Get-DateString           Get-UnixTime                                                            
@@ -55,7 +55,7 @@ Get-DateString           Get-UnixTime
 
 ------------------------------------
 
-### __ Directory __ (16)
+### __Directory__ (16)
 
 Approve-Directory              Compare-Directories           Copy-DirectoryTree            Get-DirectoryItem
 Get-DirectorySize              Get-DirectoryTree             Get-FolderSize                Invoke-ForEachChilds
@@ -65,49 +65,49 @@ Remove-DirectoryTree           Resolve-UnverifiedPath        Sync-Directories   
 
 ------------------------------------
 
-### __ Email __ (1)
+### __Email__ (1)
 
 Send-EmailNotification                                                                           
 
 
 ------------------------------------
 
-### __ Exception __ (2)
+### __Exception__ (2)
 
 New-ErrorRecord          Show-ExceptionDetails                                                   
 
 
 ------------------------------------
 
-### __ GetVSInstallPaths __ (1)
+### __GetVSInstallPaths__ (1)
 
 Get-VSInstallPaths                                                                                   
 
 
 ------------------------------------
 
-### __ GitInstall __ (4)
+### __GitInstall__ (4)
 
 Install-WindowsGit       Test-GitInstalled       Uninstall-WindowsGit    Wait-GitInstalled       
 
 
 ------------------------------------
 
-### __ Ini __ (2)
+### __Ini__ (2)
 
 Get-IniFile  Set-IniFile                                                                                     
 
 
 ------------------------------------
 
-### __ InstalledSoftware __ (1)
+### __InstalledSoftware__ (1)
 
 Get-InstalledSoftware                                                                            
 
 
 ------------------------------------
 
-### __ Log __ (6)
+### __Log__ (6)
 
 Get-LogConfig            Write-InteractiveHost   Write-Log               Write-LogError          Write-LogException
 Write-LogSuccess                                                                                 
@@ -115,7 +115,7 @@ Write-LogSuccess
 
 ------------------------------------
 
-### __ Memory __ (6)
+### __Memory__ (6)
 
 Get-MemoryUsageForAllProcesses           Get-ProcessCmdLine                      Get-ProcessCmdLineById
 Get-ProcessMemoryUsage                   Get-ProcessMemoryUsageDetails           Get-TopMemoryUsers
@@ -123,7 +123,7 @@ Get-ProcessMemoryUsage                   Get-ProcessMemoryUsageDetails          
 
 ------------------------------------
 
-### __ MessageBox __ (9)
+### __MessageBox__ (9)
 
 Get-MessageBoxResult           Register-ScriptAssemblies     Show-MessageBox               Show-MessageBoxError
 Show-MessageBoxException       Show-MessageBoxInfo           Show-MessageBoxStandby        Show-MessageBoxVoice
@@ -132,7 +132,7 @@ Test-Popupcolors
 
 ------------------------------------
 
-### __ Miscellaneous __ (29)
+### __Miscellaneous__ (30)
 
 Approve-Verb                             Clear-FolderAndCloseHandle              Clear-TemporaryFolder
 Compare-ModulePathAgainstPermission      Deploy-CustomModule                     Get-AllColors
@@ -142,13 +142,13 @@ Get-RandomColor                          Get-SHA512Hash                         
 Initialize-CoreModule                    Install-PSafe                           Invoke-CommandForEach
 Invoke-FindAndReplace                    Invoke-PopupImage                       Invoke-PopupMessage
 New-RandomFilename                       New-TemporaryDirectory                  Remove-FilesOlderThan
-Rename-FilesInFolder                     Show-CoreFuncts                         Show-Verbs
-Split-RepositoryUrl                      Split-Url                               
+Rename-FilesInFolder                     Show-CoreFunctionsHtml                  Show-CoreFuncts
+Show-Verbs                               Split-RepositoryUrl                     Split-Url
 
 
 ------------------------------------
 
-### __ Module __ (15)
+### __Module__ (15)
 
 Approve-FunctionNames          Get-AliasList                 Get-AssembliesDecl            Get-DefaultModulePath
 Get-ExportedAliassDecl         Get-ExportedFilesDecl         Get-ExportedFunctionsDecl     Get-FunctionList
@@ -158,7 +158,7 @@ Invoke-ValidateDependencies    Select-AliasName              Select-FunctionName
 
 ------------------------------------
 
-### __ Net __ (10)
+### __Net__ (10)
 
 Enable-DnsCacheService                   Get-DnsCacheServiceStatus               Get-OnlineFileNoCache
 Get-OnlineStringNoCache                  Invoke-DownloadFileWithProgress         New-HostsFileFromHashTable
@@ -168,56 +168,56 @@ Return-DnsCacheServiceDll
 
 ------------------------------------
 
-### __ NewSSHKey __ (3)
+### __NewSSHKey__ (3)
 
 Get-Elevation            Install-LinuxPackage    New-SSHKey                                      
 
 
 ------------------------------------
 
-### __ NewUniqueString __ (1)
+### __NewUniqueString__ (1)
 
 New-UniqueString                                                                                        
 
 
 ------------------------------------
 
-### __ Ownership __ (4)
+### __Ownership__ (4)
 
 Get-PrivStatus       Set-Owner           Set-OwnerU          Set-OwnerUByAdmin                       
 
 
 ------------------------------------
 
-### __ Parser __ (1)
+### __Parser__ (1)
 
 Remove-CommentsFromScriptBlock                                                   
 
 
 ------------------------------------
 
-### __ Power __ (1)
+### __Power__ (1)
 
 Get-BatteryLevel                                                                                        
 
 
 ------------------------------------
 
-### __ Privileges __ (4)
+### __Privileges__ (4)
 
 Get-TokenManipulatorMembers    Invoke-AssemblyCreation       Invoke-CorePrivLoad           New-CustomAssembly
 
 
 ------------------------------------
 
-### __ Process __ (1)
+### __Process__ (1)
 
 Invoke-Process                                                                                            
 
 
 ------------------------------------
 
-### __ Registry __ (7)
+### __Registry__ (7)
 
 Export-RegistryItem      Format-RegistryPath     Get-RegistryValue       New-RegistryValue       Set-RegistryValue
 Start-RegistryEditor     Test-RegistryValue                                                      
@@ -225,28 +225,28 @@ Start-RegistryEditor     Test-RegistryValue
 
 ------------------------------------
 
-### __ ResolveHost __ (2)
+### __ResolveHost__ (2)
 
 Resolve-Host             Test-IsValidIPAddress                                                   
 
 
 ------------------------------------
 
-### __ Script __ (1)
+### __Script__ (1)
 
 Get-ScriptDirectory                                                                                  
 
 
 ------------------------------------
 
-### __ Search __ (6)
+### __Search__ (6)
 
 Find-Item         Invoke-WebSearch  New-SearchUrl    Search-Files     Search-Item      Search-Pattern   
 
 
 ------------------------------------
 
-### __ Security __ (6)
+### __Security__ (6)
 
 Confirm-IsAdministrator        Disable-ExploitGuard          Disable-RealTimeProtection    Disable-SecurityFeatures
 Disable-SmartScreen            Set-ExclusionPaths                                          
@@ -254,7 +254,7 @@ Disable-SmartScreen            Set-ExclusionPaths
 
 ------------------------------------
 
-### __ SelectAudioDevice __ (5)
+### __SelectAudioDevice__ (5)
 
 Select-AudioDevice             Select-AudioExternal          Select-AudioHeadset           Select-NextAudioDevice
 Select-PreviousAudioDevice                                                                 
@@ -262,28 +262,28 @@ Select-PreviousAudioDevice
 
 ------------------------------------
 
-### __ Service __ (2)
+### __Service__ (2)
 
 Disable-Service          List-WriteableServices                                                  
 
 
 ------------------------------------
 
-### __ Sid __ (5)
+### __Sid__ (5)
 
 Convert-SIDtoName    Get-SIDUSerTable    Get-SIDValueForUSer Get-UserNtAccount   Get-USerSID         
 
 
 ------------------------------------
 
-### __ Sudo __ (1)
+### __Sudo__ (1)
 
 Invoke-ElevatedPrivilege                                                                   
 
 
 ------------------------------------
 
-### __ System __ (43)
+### __System__ (43)
 
 Add-GuidToCsProj               Clear-UserVariables           Confirm-IsNullOrEmpty         Convert-Bytes
 ConvertFrom-UrlEncoded         ConvertTo-DateString          ConvertTo-NZT                 ConvertTo-UrlEncoded
@@ -300,28 +300,28 @@ Uninstall-ChocoApp             Update-ChocoApp               Update-File
 
 ------------------------------------
 
-### __ Tasks __ (2)
+### __Tasks__ (2)
 
 Install-SimpleTask       New-ScheduledTaskFolder                                                 
 
 
 ------------------------------------
 
-### __ TestIsValidIPAddress __ (1)
+### __TestIsValidIPAddress__ (1)
 
 Test-IsValidIPAddress                                                                            
 
 
 ------------------------------------
 
-### __ Timer __ (2)
+### __Timer__ (2)
 
 Invoke-FormatElapsedTime       Measure-TimeBlock                                           
 
 
 ------------------------------------
 
-### __ web __ (7)
+### __web__ (7)
 
 Get-ChromeApp        Get-ChromiumShim    Invoke-OnlineCall   Invoke-OpenWebPage  Invoke-StartWeb     Invoke-WebSearch
 New-SearchUrl                                                                                        
@@ -329,14 +329,14 @@ New-SearchUrl
 
 ------------------------------------
 
-### __ WebSearch __ (2)
+### __WebSearch__ (2)
 
 Invoke-WebSearch  New-SearchUrl                                                                         
 
 
 ------------------------------------
 
-### __ WGetUtils __ (4)
+### __WGetUtils__ (4)
 
 Get-RedditAudio          Get-RedditVideo         Get-RedditVideo2        Invoke-BypassPaywall    
 

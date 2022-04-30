@@ -450,26 +450,48 @@ function Deploy-CustomModule{
 }
 
 
-
 function Show-CoreFuncts{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     ()     
     $ModulePath = 'C:\DOCUMENTS\PowerShell\Module-Development\PowerShell.Module.Core'
     $SourcePath = Join-Path $ModulePath 'src'
-    $READMEPath = Join-Path $ModulePath 'README_Test.md'
+    $READMEPath = Join-Path $ModulePath 'Functions.md'
     #Push-Location $Path
     $FList = Get-FunctionList $SourcePath
-    $Groups = (Get-FunctionList src | select Base -Unique).Base
+    $Groups = ($FList| select Base -Unique).Base
     $Groups.ForEach({
         $g = $_
         $Formatted = $FList| where Base -match $g | sort -Property Name | fw  -Autosize | Out-String
         $FunctionsCount = ($FList| where Base -match $g ).Count 
         Add-Content -Path $READMEPath -Value "------------------------------------`n"
-        Add-Content -Path $READMEPath -Value "### __ $g __ ($FunctionsCount)"
+        $s = '### __' + $g  + '__ ' + "($FunctionsCount)"
+        Add-Content -Path $READMEPath -Value $s
         Add-Content -Path $READMEPath -Value "$Formatted"
        
     })
+}
+
+
+function Show-CoreFunctionsHtml{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    ()     
+    $ModulePath = 'C:\DOCUMENTS\PowerShell\Module-Development\PowerShell.Module.Core'
+    $SourcePath = Join-Path $ModulePath 'src'
+    $HtmlPath = Join-Path $ModulePath 'Functions.html'
+
+    $Header = @"
+<style>
+TABLE {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;}
+TH {border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #6495ED;}
+TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
+</style>
+"@
+
+    Get-FunctionList $SourcePath  | ConvertTo-Html -Property Base, Name  -Head $Header| Out-File -FilePath $HtmlPath
+    $BrowserExe = (Get-ChromeApp)
+    start-process "$BrowserExe" -ArgumentList "$HtmlPath" 
 }
 
 
