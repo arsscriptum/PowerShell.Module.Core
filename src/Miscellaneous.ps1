@@ -5,16 +5,6 @@
 #>
 
 
-function Install-PSafe{
-    $Url = 'https://github.com/pwsafe/pwsafe/releases/download/3.58.0/pwsafe-3.58.0.exe'
-    $Local= "$ENV:TEMP\pwsafe-3.58.0.exe"
-    Get-OnlineFileNoCache -Url $Url -Path $Local
-    if(Test-Path -Path $Local -PathType 'Leaf'){
-        Read-Host 'Press a key to launch installer...'
-        & "$Local"
-    }
-}
-
 function New-RandomFilename{
 <#
     .SYNOPSIS

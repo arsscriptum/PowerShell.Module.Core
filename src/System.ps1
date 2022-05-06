@@ -433,6 +433,8 @@ function Remove-FileFolder {
         [int]$retryTimeInSeconds = 60
     )
 
+    $SpecialCharacter = $target.Contains('*') -Or $target.Contains('?')
+    if($SpecialCharacter) { throw "Cannot use wildcards with this function... yet." }
     $targetItem = Get-Item $target
     $targetPath = $targetItem.FullName
 
@@ -998,6 +1000,8 @@ function Remove-ItemCustom {
     )
     if ($MyInvocation.Line -match 'rmf' -or $Force) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
     foreach ($path in $Paths) {
+        $WildcardCharacters = $path.Contains('*') -Or $path.Contains('?')
+        if($WildcardCharacters) { throw "Cannot use wildcards with this function... yet." }
         $item = Get-Item -Path $path -ErrorAction SilentlyContinue
         if ($null -eq $item) {
             Write-Error ("'{0}' not found" -f $Path)
