@@ -5,6 +5,23 @@
 #>
 
 
+
+
+function Read-PathValue{
+<#
+    .SYNOPSIS
+            Read the system path value
+#>
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param()  
+
+    $PathValue = $(Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
+    return $PathValue 
+}  
+
+
+
 function New-RandomFilename{
 <#
     .SYNOPSIS
