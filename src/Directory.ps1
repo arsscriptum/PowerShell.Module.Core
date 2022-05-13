@@ -442,7 +442,7 @@ function Sync-Directories {
         }
         Write-Verbose "Start-Process $ProcessArguments"
 
-        $awnser = Read-Host "Press `'y`' to go"
+        $awnser = 'y'#Read-Host "Press `'y`' to go"
         $process = Start-Process @ProcessArguments
       
         $handle = $process.Handle # cache proc.Handle

@@ -108,7 +108,8 @@ Function Set-EnvironmentVariable{
                 $TempPSDrive = $(get-date -Format "temp\hhh-\mmmm-\sss")
                 new-psdrive -name $TempPSDrive -PsProvider Environment -Root env:| Out-null
                 $NewValPath=( "$TempPSDrive" + ":\$Name")
-                New-Item -Path $NewValPath -Value $Value| Out-null
+                Remove-Item -Path $NewValPath -Force -ErrorAction Ignore | Out-null
+                New-Item -Path $NewValPath -Value $Value -Force -ErrorAction Ignore | Out-null
                 Remove-PSDrive $TempPSDrive -Force | Out-null
             }
       }
