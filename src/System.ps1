@@ -6,6 +6,9 @@
 Add-Type -AssemblyName Microsoft.VisualBasic
 
 
+
+
+
 function Get-HttpWebResponseContent {
 <#
     .SYNOPSIS
@@ -1127,5 +1130,39 @@ function Get-DeleteBuffer {
         $Script:DeleteBuffer = [DeleteBuffer]::new()
     }
     return $Script:DeleteBuffer
+}
+
+
+
+
+function Empty-DirectoryRecurse{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [ValidateScript({
+            if(-Not ($_ | Test-Path) ){
+                throw "File or folder does not exist"
+            }
+            if(-Not ($_ | Test-Path -PathType Container) ){
+                throw "The Path argument must be a Directory. Files paths are not allowed."
+            }
+            return $true 
+        })]
+        [Parameter(Mandatory=$true,Position=0)]    
+        [string]$Path
+    )
+
+
+    $ResolvedPath = (Resolve-Path $Path).Path
+    $a = Read-Host "Remove all in $ResolvedPath (y/N)?"
+    if($a -ne 'y'){Write-Host "Cancel" -f Red ;  return}
+
+    Write-Host "Removing Folders..." -f Red ;
+    $fn = (gci -Path "$ResolvedPath" -Directory -Recurse -EA Ignore).Fullname
+    $fn.ForEach({ $n = $_ ; rmf "$n" })
+
+    Write-Host "Removing Files..." -f Red ;
+    $fn = (gci -Path "$ResolvedPath" -File -Recurse -EA Ignore).Fullname
+    $fn.ForEach({ $n = $_ ; rmf "$n" })
 }
 
