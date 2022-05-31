@@ -28,7 +28,32 @@
 
 #>
 
- 
+
+
+function Invoke-BypassPaywall{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
+        [string]$Url
+    )
+
+    $fn = New-RandomFilename -Extension 'html'
+  
+    Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "Invoke-WebRequest -Uri `"$Url`""
+
+    $Content = Invoke-WebRequest -Uri "$Url"
+    $sc = $Content.StatusCode    
+    if($sc -eq 200){
+        $cnt = $Content.Content
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "StatusCode $sc OK"
+        Set-Content -Path "$fn" -Value "$cnt"
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "start-process $fn"
+        start-process "$fn"
+    }else{
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "ERROR StatusCode $sc"
+    }
+}
+
 
 function Get-ChromeApp{
 

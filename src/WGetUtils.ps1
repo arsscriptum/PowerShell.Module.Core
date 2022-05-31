@@ -24,38 +24,10 @@ function Get-WGetExecutable{
     $Cmd = Get-Command -Name 'wget.exe' -ErrorAction Ignore
     if($Cmd -eq $Null) { throw "Cannot find wget.exe" }
     $WgetExe = $Cmd.Source
-    if(-not(Test-Path $WgetExe)){ throw "cannot live" }
+    if(-not(Test-Path $WgetExe)){ throw "cannot find wget" }
     return $WgetExe
 }
 
-
-
-function Invoke-BypassPaywall{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
-        [string]$Url,
-        [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="option")]
-        [switch]$Option        
-    )
-
-    $WgetExe = Get-WGetExecutable
-    $fn = New-RandomFilename -Extension 'html'
-  
-    Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "wget $WgetExe url $Url"
-
-    $Content = Invoke-WebRequest -Uri "$Url"
-    $sc = $Content.StatusCode    
-    if($sc -eq 200){
-        $cnt = $Content.Content
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "StatusCode $sc OK"
-        Set-Content -Path "$fn" -Value "$cnt"
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "start-process $fn"
-        start-process "$fn"
-    }else{
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "ERROR StatusCode $sc"
-    }
-}
 
 
 function Save-RedditAudio{
