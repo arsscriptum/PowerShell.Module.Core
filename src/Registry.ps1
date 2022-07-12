@@ -187,6 +187,52 @@ function Set-RegistryValue
 
 
 
+function Remove-RegistryValue
+{
+<#
+    .Synopsis
+    Add a value in the registry, if it exists, it will replace
+    .Description
+    Add a value in the registry, if it exists, it will replace
+    .Parameter Path
+    Path
+    .Parameter Name
+    Name
+    .Parameter Value
+    Value 
+    .Inputs
+    None
+    .Outputs
+    SUCCESS(true) or FAILURE(false)
+    .Example
+    Set-RegistryValue "$ENV:OrganizationHKLM\reddit-pwsh-script" "ATestingToken" "blabla"
+    >> TRUE
+
+#>
+    param (
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory = $true, Position=1)]
+        [Alias('Entry')]
+        [String]$Name
+    )
+
+ 
+    try {
+        if(Test-RegistryValue -Path $Path -Entry $Name){
+            Remove-ItemProperty -Path $Path -Name $Name -Force  -ErrorAction ignore | Out-null
+        }
+      
+        return $true
+    }
+
+    catch {
+        return $false
+    }
+}
+
+
+
 
 function New-RegistryValue
 {

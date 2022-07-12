@@ -24,6 +24,47 @@
 ##  Copyright(c) All rights reserved.
 ##===----------------------------------------------------------------------===
  
+
+function Invoke-CheckScreenSaver
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        #[Parameter(Mandatory = $True, Position=0)]
+        #[ValidateNotNullOrEmpty()]$ExePath,
+        [Parameter(Mandatory = $False)]
+        [string]$WorkingDirectory
+    )
+    $ErrorActionPreference = 'Stop'
+    $LogFile =  New-RandomFilename -Path 'x:\Log\ScreenSaver' -CreateFile -Extension 'log'
+    #$Null = Remove-Item -Path $LogFile -Force -ErrorAction Ignore
+    #$Null = New-Item -Path $LogFile -Force -ErrorAction Ignore
+    $CurrDateSeconds = Get-Date -UFormat %s
+    $LastCheckTime = Get-Date -UFormat %s
+    $CurrDate = (Get-Date).GetDateTimeFormats()[9]
+    $LogContent = "ScreenSaver Check has started on $CurrDate"
+    Add-Content -Path $LogFile -Value $LogContent
+    $AllProcesses = (Get-CIMInstance –Class Win32_Process).Name
+    $AllProcessesCount = $AllProcesses.Count
+    if($AllProcessesCount -lt 1){
+        Write-Warning "No Process found"
+        return;
+    }
+    $CurrentTimeSpent = $LastCheckTime - $CurrDateSeconds
+    if($CurrentTimeSpent -gt 60){
+        $LogContent = "ScreenSaver is still running. Current time is $CurrDate"
+        Add-Content -Path $LogFile -Value $LogContent
+    }
+    $FoundScreenSaver = $False
+    ForEach($p in $AllProcesses){
+        $i = $p.LastIndexOf('.')
+        $l = $p.Length
+        $Ext = $p.SubString($i,4)
+        if($Ext -eq '.scr'){
+            $FoundScreenSaver = $True
+        }
+    }
+
+ }
 function Invoke-Process
 {
     [CmdletBinding(SupportsShouldProcess)]
