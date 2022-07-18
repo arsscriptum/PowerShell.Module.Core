@@ -537,7 +537,16 @@ function Get-NextIndexForId{
 }
 
 function New-RegListItem{
-
+<#
+    .Synopsis
+    Add a string, to the list associated to the ID in the registry.
+    .Description
+    Add a string, to the list associated to the ID in the registry. Get it back with Get-RegListLastItem and Get-RegListItemList
+    .Parameter String
+    srting
+    .Parameter Id
+    id
+#>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
@@ -565,7 +574,16 @@ function New-RegListItem{
 
 
 function Get-RegListLastItem{
-
+<#
+    .Synopsis
+    Get a string, from the list associated to the ID in the registry
+    .Description
+    Get a string, from the list associated to the ID in the registry. You can delete it at the same time with Delete arg
+    .Parameter Delete
+    pop the string (del)
+    .Parameter Id
+    id
+#>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
@@ -609,7 +627,14 @@ function Get-RegListLastItem{
 
 
 function Get-RegListItemList{
-
+<#
+    .Synopsis
+    Get all the strings, from the list associated to the ID in the registry
+    .Description
+    Get all string, from the list associated to the ID in the registry.
+    .Parameter Id
+    id
+#>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
@@ -654,14 +679,30 @@ function Get-RegListItemList{
 
 
 function Remove-RegListItemList{
-
+<#
+    .Synopsis
+    Delete all the strings, from the list associated to the ID in the registry
+    .Description
+    Delete all string, from the list associated to the ID in the registry.
+    .Parameter Id
+    id
+#>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
         [Alias('i')]
-        [String]$Id
+        [String]$Id,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="test only")]
+        [switch]$Test        
     )
-
+     $TestMode = $False
+    if ($PSBoundParameters.ContainsKey('Verbose')) {
+        Write-Verbose "Verbose OUTPUT"             
+    }
+    if ( ($PSBoundParameters.ContainsKey('WhatIf') -Or($PSBoundParameters.ContainsKey('Test')))) {
+        Write-Verbose "TEST ONLY"             
+        $TestMode = $True
+    }
     $Script:RegistryPath = Get-RegListRootPath
 
     if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
@@ -674,21 +715,18 @@ function Remove-RegListItemList{
             $NumId = $Id + "_$num"
 
             $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
-            log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
+             Write-Verbose "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
 
-            if($Found -eq $True){  
+            if($TestMode -eq $false){  
+                $Null = Remove-RegistryValue "$Script:RegistryPath" "$NumId"
+                 Write-Verbose "Remove-RegistryValue `"$Script:RegistryPath`" `"$NumId`""
+            }else{
+                log "TestMode : would delete `"$Script:RegistryPath`" `"$NumId`" "
 
-                $Exists=Test-RegistryValue "$Script:RegistryPath" "$NumId"
-
-                if($Exists){
-                    $Null = Remove-RegistryValue "$Script:RegistryPath" "$NumId"
-                    log "Remove-RegistryValue `"$Script:RegistryPath`" `"$NumId`""
-                }else{
-                    break;
-                }
-                $num++ 
-            }    
-        } 
+                break;
+            }
+        $num++ 
+        }     
     }catch{
         log "$_" -t 'err'
     }
