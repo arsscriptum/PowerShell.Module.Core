@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Invoke-BypassPaywall
+# Get-ModuleFunctions
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Invoke-BypassPaywall [-Url] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Get-ModuleFunctions [-Name] <String> [-Imported] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -45,8 +45,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Url
-url
+### -Imported
+{{ Fill Imported Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Name
+Full repository Url https or ssh
 
 ```yaml
 Type: String

@@ -576,36 +576,39 @@ function Import-CustomModule {
 }
 
 
-# SIG # Begin signature block
-# MIIFxAYJKoZIhvcNAQcCoIIFtTCCBbECAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU25TC0MdOue6lW6kDwZe2L2Ja
-# im6gggNNMIIDSTCCAjWgAwIBAgIQmkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCHQUA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
-# Fw0yMjAyMDkyMzI4NDRaFw0zOTEyMzEyMzU5NTlaMCUxIzAhBgNVBAMTGkFyc1Nj
-# cmlwdHVtIFBvd2VyU2hlbGwgQ1NDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-# CgKCAQEA60ec8x1ehhllMQ4t+AX05JLoCa90P7LIqhn6Zcqr+kvLSYYp3sOJ3oVy
-# hv0wUFZUIAJIahv5lS1aSY39CCNN+w47aKGI9uLTDmw22JmsanE9w4vrqKLwqp2K
-# +jPn2tj5OFVilNbikqpbH5bbUINnKCDRPnBld1D+xoQs/iGKod3xhYuIdYze2Edr
-# 5WWTKvTIEqcEobsuT/VlfglPxJW4MbHXRn16jS+KN3EFNHgKp4e1Px0bhVQvIb9V
-# 3ODwC2drbaJ+f5PXkD1lX28VCQDhoAOjr02HUuipVedhjubfCmM33+LRoD7u6aEl
-# KUUnbOnC3gVVIGcCXWsrgyvyjqM2WQIDAQABo3YwdDATBgNVHSUEDDAKBggrBgEF
-# BQcDAzBdBgNVHQEEVjBUgBD8gBzCH4SdVIksYQ0DovzKoS4wLDEqMCgGA1UEAxMh
-# UG93ZXJTaGVsbCBMb2NhbCBDZXJ0aWZpY2F0ZSBSb290ghABvvi0sAAYvk29NHWg
-# Q1DUMAkGBSsOAwIdBQADggEBAI8+KceC8Pk+lL3s/ZY1v1ZO6jj9cKMYlMJqT0yT
-# 3WEXZdb7MJ5gkDrWw1FoTg0pqz7m8l6RSWL74sFDeAUaOQEi/axV13vJ12sQm6Me
-# 3QZHiiPzr/pSQ98qcDp9jR8iZorHZ5163TZue1cW8ZawZRhhtHJfD0Sy64kcmNN/
-# 56TCroA75XdrSGjjg+gGevg0LoZg2jpYYhLipOFpWzAJqk/zt0K9xHRuoBUpvCze
-# yrR9MljczZV0NWl3oVDu+pNQx1ALBt9h8YpikYHYrl8R5xt3rh9BuonabUZsTaw+
-# xzzT9U9JMxNv05QeJHCgdCN3lobObv0IA6e/xTHkdlXTsdgxggHhMIIB3QIBATBA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdAIQ
-# mkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAig
-# AoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgEL
-# MQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQU2tOGjrn19iVY3wdsI/lt
-# /6K3nPcwDQYJKoZIhvcNAQEBBQAEggEAB4J4lN7qV3gT2hswda6CuG4QK0X6+vI1
-# UfjvaHQ/Itm0MnaMJbiemR30p4a5Hm7XRpvoc19oGs/WEb7B4CmvbHXX1CxmlCKo
-# P/1R4Fp/mjBpiyK0YfaXezJywKc5HMGPYiH30kXyMPvEvxBQ3VtI55X8rdCd6T88
-# PR8uOmWMd3roZmSCetLp6oWbEeVbNqle8RX0igKo+6qKBO4o7tOLcv8tTSTn3ezn
-# 4DdPhHpYIzqlEB11Qta30Sq4jm2LYGYqqklDR6BXTVvP9nE1vp3h2CjA7xsnw85t
-# XWd/+uE2Cv6Gm/s1qZDN4dPMG3CX/GSqBfHwkT3bK2j3XdVC7zDWrg==
-# SIG # End signature block
+
+function Get-ModuleFunctions {
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true, HelpMessage="Full repository Url https or ssh") ]
+        [String]$Name,
+        [switch]$Imported
+    ) 
+
+    $ModulePath = (Get-WritableModulePath).Path
+
+    $AllMods = @(gci -Path $ModulePath -Directory).Name ; 
+    ForEach($mod in $AllMods){
+        if($mod -match $Name){
+            Write-Host -n "`n============================================`nMODULE COMMANDS for " -f DarkRed ;
+            Write-Host "$mod" -f DarkYellow ;
+            $Null = import-module $mod -Force:$Force -DisableNameChecking  -SkipEditionCheck -Global;
+            $ModData = Get-Module | where Name -Match $Name -ErrorAction Ignore
+
+            If($ModData -eq $Null){
+                Write-Host " NOT LOADED" -f DarkRed ;
+                return
+            }
+            $RootModule = $ModData.RootModule
+            $Author = $ModData.Author
+            $Version = $ModData.Version
+            $Copyright = $ModData.Copyright
+            $Commands = (Get-Command -Module $mod).Name
+            ForEach($cmd in $Commands){
+                Write-Host "✅ $cmd"
+            }
+        }
+    }
+
+}

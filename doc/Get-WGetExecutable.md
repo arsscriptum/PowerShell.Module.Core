@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Invoke-BypassPaywall
+# Get-WGetExecutable
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Invoke-BypassPaywall [-Url] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Get-WGetExecutable [-Option] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -45,16 +45,16 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Url
-url
+### -Option
+option
 
 ```yaml
-Type: String
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
-Required: True
-Position: 0
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
@@ -81,7 +81,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### System.Management.Automation.SwitchParameter
 
 ## OUTPUTS
 

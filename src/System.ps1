@@ -6,6 +6,9 @@
 Add-Type -AssemblyName Microsoft.VisualBasic
 
 
+
+
+
 function Get-HttpWebResponseContent {
 <#
     .SYNOPSIS
@@ -105,7 +108,8 @@ Function Set-EnvironmentVariable{
                 $TempPSDrive = $(get-date -Format "temp\hhh-\mmmm-\sss")
                 new-psdrive -name $TempPSDrive -PsProvider Environment -Root env:| Out-null
                 $NewValPath=( "$TempPSDrive" + ":\$Name")
-                New-Item -Path $NewValPath -Value $Value| Out-null
+                Remove-Item -Path $NewValPath -Force -ErrorAction Ignore | Out-null
+                New-Item -Path $NewValPath -Value $Value -Force -ErrorAction Ignore | Out-null
                 Remove-PSDrive $TempPSDrive -Force | Out-null
             }
       }
@@ -433,6 +437,8 @@ function Remove-FileFolder {
         [int]$retryTimeInSeconds = 60
     )
 
+    $SpecialCharacter = $target.Contains('*') -Or $target.Contains('?')
+    if($SpecialCharacter) { throw "Cannot use wildcards with this function... yet." }
     $targetItem = Get-Item $target
     $targetPath = $targetItem.FullName
 
@@ -998,6 +1004,8 @@ function Remove-ItemCustom {
     )
     if ($MyInvocation.Line -match 'rmf' -or $Force) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
     foreach ($path in $Paths) {
+        $WildcardCharacters = $path.Contains('*') -Or $path.Contains('?')
+        if($WildcardCharacters) { throw "Cannot use wildcards with this function... yet." }
         $item = Get-Item -Path $path -ErrorAction SilentlyContinue
         if ($null -eq $item) {
             Write-Error ("'{0}' not found" -f $Path)
@@ -1123,5 +1131,39 @@ function Get-DeleteBuffer {
         $Script:DeleteBuffer = [DeleteBuffer]::new()
     }
     return $Script:DeleteBuffer
+}
+
+
+
+
+function Empty-DirectoryRecurse{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [ValidateScript({
+            if(-Not ($_ | Test-Path) ){
+                throw "File or folder does not exist"
+            }
+            if(-Not ($_ | Test-Path -PathType Container) ){
+                throw "The Path argument must be a Directory. Files paths are not allowed."
+            }
+            return $true 
+        })]
+        [Parameter(Mandatory=$true,Position=0)]    
+        [string]$Path
+    )
+
+
+    $ResolvedPath = (Resolve-Path $Path).Path
+    $a = Read-Host "Remove all in $ResolvedPath (y/N)?"
+    if($a -ne 'y'){Write-Host "Cancel" -f Red ;  return}
+
+    Write-Host "Removing Folders..." -f Red ;
+    $fn = (gci -Path "$ResolvedPath" -Directory -Recurse -EA Ignore).Fullname
+    $fn.ForEach({ $n = $_ ; rmf "$n" })
+
+    Write-Host "Removing Files..." -f Red ;
+    $fn = (gci -Path "$ResolvedPath" -File -Recurse -EA Ignore).Fullname
+    $fn.ForEach({ $n = $_ ; rmf "$n" })
 }
 

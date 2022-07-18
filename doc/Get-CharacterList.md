@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Invoke-BypassPaywall
+# Get-CharacterList
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Invoke-BypassPaywall [-Url] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Get-CharacterList [-Length] <Int32> [[-Mode] <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -45,16 +45,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Url
-url
+### -Length
+The length of the character list
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 0
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
+### -Mode
+Message
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+Accepted values: numeric, lowercase, uppercase, alpha, alphanumeric
+
+Required: False
+Position: 1
 Default value: None
 Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
@@ -80,6 +96,8 @@ Accept wildcard characters: False
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
+
+### System.Int32
 
 ### System.String
 

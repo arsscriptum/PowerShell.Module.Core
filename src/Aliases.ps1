@@ -66,11 +66,13 @@ New-Alias -Name standby -Value Show-MessageBoxStandby -Scope Global -ErrorAction
 #===============================================================================
 New-Alias -Name cm -Value Get-CommandSource -Scope Global -ErrorAction Ignore -Force
 
+
 #===============================================================================
 # Module.ps1
 #===============================================================================
 New-Alias -Name import -Value Import-CustomModule -Scope Global -ErrorAction Ignore -Description 'Import a Powershell Module very easily' -Force
 New-Alias -Name install -Value Install-ModuleToDirectory -Scope Global -ErrorAction Ignore -Description 'Install a PowerShell Module in my personal directory' -Force
+New-Alias -Name modfunc -Value Get-ModuleFunctions -Scope Global -ErrorAction Ignore -Force
 
 #===============================================================================
 # Registry.ps1

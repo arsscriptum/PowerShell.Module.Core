@@ -393,7 +393,7 @@ function Sync-Directories {
             $ArgumentList += " /V"
         }
 
-        if (($PSBoundParameters.ContainsKey('WhatIf')) -Or ($WhatIf)) {
+        if ($PSBoundParameters.ContainsKey('WhatIf')) {
             Write-Host '[ROBOCOPY] ' -f DarkRed -NoNewLine
             Write-Host "WhatIf : Simulation; List only - don't copy, timestamp or delete any files." -f Yellow            
             $ArgumentList += " /L"
@@ -431,7 +431,19 @@ function Sync-Directories {
         if($Log -ne ""){
             $ArgumentList += " /LOG:$Log"
         }
-        $process = Start-Process -FilePath $ROBOCOPY -ArgumentList $ArgumentList -Wait -NoNewWindow -PassThru
+
+
+        $ProcessArguments = @{
+            FilePath = $ROBOCOPY
+            ArgumentList = $ArgumentList 
+            Wait = $true 
+            NoNewWindow = $true
+            PassThru = $true
+        }
+        Write-Verbose "Start-Process $ProcessArguments"
+
+        $awnser = 'y'#Read-Host "Press `'y`' to go"
+        $process = Start-Process @ProcessArguments
       
         $handle = $process.Handle # cache proc.Handle
         $null=$process.WaitForExit();

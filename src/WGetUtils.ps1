@@ -13,35 +13,24 @@
 #̷𝓍   Invoke-BypassPaywall <url>    -- Bypass Paywall for the Guardian
 #>
 
-function Invoke-BypassPaywall{
+
+function Get-WGetExecutable{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
-        [string]$Url,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="option")]
         [switch]$Option        
     )
 
-    $WgetExe = (Getcmd wget.exe).Source
-    $fn = New-RandomFilename -Extension 'html'
-  
-    Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "wget $WgetExe url $Url"
-
-    $Content = Invoke-WebRequest -Uri "$Url"
-    $sc = $Content.StatusCode    
-    if($sc -eq 200){
-        $cnt = $Content.Content
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "StatusCode $sc OK"
-        Set-Content -Path "$fn" -Value "$cnt"
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "start-process $fn"
-        start-process "$fn"
-    }else{
-        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "ERROR StatusCode $sc"
-    }
+    $Cmd = Get-Command -Name 'wget.exe' -ErrorAction Ignore
+    if($Cmd -eq $Null) { throw "Cannot find wget.exe" }
+    $WgetExe = $Cmd.Source
+    if(-not(Test-Path $WgetExe)){ throw "cannot find wget" }
+    return $WgetExe
 }
 
 
-function Get-RedditAudio{
+
+function Save-RedditAudio{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
@@ -72,7 +61,7 @@ function Get-RedditAudio{
     $RequestUrl = "https://www.redditsave.com$NewRequest"
 
     Write-Host -n -f DarkRed "[RedditAudio] " ; Write-Host -f DarkYellow "The encoded url is: $encodedURL"
-    $WgetExe = (Getcmd wget.exe).Source
+    $WgetExe = Get-WGetExecutable
 
     Write-Host -n -f DarkRed "[RedditAudio] " ; Write-Host -f DarkYellow "wget $WgetExe url $Url"
 
@@ -91,7 +80,7 @@ function Get-RedditAudio{
 }
 
 
-function Get-RedditVideo{
+function Save-RedditVideo{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
@@ -119,7 +108,7 @@ function Get-RedditVideo{
     $l = $j-$i
     $RequestUrl = $Content.Substring($i+1, $l-1)
     
-    $WgetExe = (Getcmd wget.exe).Source
+    $WgetExe = Get-WGetExecutable
     Write-Host -n -f DarkRed "[RedditVideo] " ; Write-Host -f DarkYellow "Please wait...."
 
     $fn = New-RandomFilename -Extension 'mp4'
@@ -135,28 +124,3 @@ function Get-RedditVideo{
         Write-Host -n -f DarkRed "[RedditVideo] " ; Write-Host -f DarkYellow "ERROR ExitCode $ec"
     }
 }
-
-function Get-RedditVideo2{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
-        [string]$Url   
-    )
-
-    try{
-        $d = Invoke-RestMethod "$Url.json"
-        #$link = $d[0].data.children.data.secure_media.reddit_video.scrubber_media_url
-        $link = $d[0].data.children.data.secure_media.reddit_video.fallback_url
-        #$file = $link.split('/')[-1]
-        #$file = ($link.split('/')[-1]).split('?')[0]
-        $fn = New-RandomFilename -Extension 'mp4'
-        $Webclient = New-Object System.Net.WebClient
-        $Webclient.DownloadFile($link, $fn)
-        Invoke-Expression $fn
-    } catch {
-        $_.Exception.Message | Write-Warning
-        return $null
-    }
-    
-}
-

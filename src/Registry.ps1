@@ -5,6 +5,77 @@
 #>
 
 
+$Global:RegLogEnabled = $False
+
+
+function Write-RegLog {
+
+    <#
+    .SYNOPSIS
+        Copy one or 2 files to a destination folder
+    .DESCRIPTION
+        Copy one or 2 files to a destination folder 
+            - if file size is less than pre-defined value (Threshold) 
+            - after asking the user for copy confirmation   
+       
+    .PARAMETER Message (-m)
+        Log Message
+    .PARAMETER Type 'wrn','nrm','err','don'
+        Message Type
+            'wrn' : Warning
+            'nrm' : Normal
+            'err' : Error
+            'don' : Done
+
+    .EXAMPLE 
+        log "Copied $Src to $Dst" -t 'don'  
+        log "$Src ==> $Destination" -t 'wrn'
+        log "test error" -t 'err'
+    #>
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('m')]
+        [String]$Message,
+        [Parameter(Mandatory=$false)]
+        [Alias('t')]
+        [ValidateSet('wrn','nrm','err','don')]
+        [String]$Type='nrm',
+        [Parameter(Mandatory=$false)]
+        [Alias('n')]
+        [switch]$NoReturn
+    )
+
+    if($Global:RegLogEnabled -eq $False){return}
+    if( ($PSBoundParameters.ContainsKey('Verbose')) -Or ( $Global:LogVerbose )  ){
+        Write-Verbose "$Message"
+        return
+    }
+    switch ($Type) {
+        'nrm'  {
+            Write-Host -n -f DarkCyan "[REG] " ; if($NoReturn) { Write-Host -n -f DarkGray "$Message"} else {Write-Host -f DarkGray "$Message"}
+        }
+        'don'  {
+            Write-Host -n -f DarkGreen "[DONE] " ; Write-Host -f DarkGray "$Message"  
+        }
+        'wrn'  {
+            Write-Host -n -f DarkYellow "[WARN] " ; Write-Host -f White "$Message" 
+        }
+        'err'  {
+            Write-Host -n -f DarkRed "[ERROR] " ; Write-Host -f DarkYellow "$Message" 
+        }
+    }
+}
+
+New-Alias -Name 'log' -Value 'Write-RegLog' -ErrorAction Ignore -Force
+
+
+function Get-RegListRootPath{
+    return "$ENV:OrganizationHKCU\windows.terminal\tmppaths"
+}
+
+
 function Export-RegistryItem{
     [CmdletBinding(SupportsShouldProcess)]
     Param
@@ -177,6 +248,52 @@ function Set-RegistryValue
         }
       
         New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-null
+        return $true
+    }
+
+    catch {
+        return $false
+    }
+}
+
+
+
+function Remove-RegistryValue
+{
+<#
+    .Synopsis
+    Add a value in the registry, if it exists, it will replace
+    .Description
+    Add a value in the registry, if it exists, it will replace
+    .Parameter Path
+    Path
+    .Parameter Name
+    Name
+    .Parameter Value
+    Value 
+    .Inputs
+    None
+    .Outputs
+    SUCCESS(true) or FAILURE(false)
+    .Example
+    Set-RegistryValue "$ENV:OrganizationHKLM\reddit-pwsh-script" "ATestingToken" "blabla"
+    >> TRUE
+
+#>
+    param (
+        [Parameter(Mandatory = $true, Position=0)]
+        [String]$Path,
+        [Parameter(Mandatory = $true, Position=1)]
+        [Alias('Entry')]
+        [String]$Name
+    )
+
+ 
+    try {
+        if(Test-RegistryValue -Path $Path -Entry $Name){
+            Remove-ItemProperty -Path $Path -Name $Name -Force  -ErrorAction ignore | Out-null
+        }
+      
         return $true
     }
 
@@ -361,37 +478,222 @@ function Start-RegistryEditor
     }
 }
 
+function Get-LastIndexForId{
 
-# SIG # Begin signature block
-# MIIFxAYJKoZIhvcNAQcCoIIFtTCCBbECAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjGB9oxKofud09J+8VF7J0wP1
-# VtmgggNNMIIDSTCCAjWgAwIBAgIQmkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCHQUA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
-# Fw0yMjAyMDkyMzI4NDRaFw0zOTEyMzEyMzU5NTlaMCUxIzAhBgNVBAMTGkFyc1Nj
-# cmlwdHVtIFBvd2VyU2hlbGwgQ1NDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-# CgKCAQEA60ec8x1ehhllMQ4t+AX05JLoCa90P7LIqhn6Zcqr+kvLSYYp3sOJ3oVy
-# hv0wUFZUIAJIahv5lS1aSY39CCNN+w47aKGI9uLTDmw22JmsanE9w4vrqKLwqp2K
-# +jPn2tj5OFVilNbikqpbH5bbUINnKCDRPnBld1D+xoQs/iGKod3xhYuIdYze2Edr
-# 5WWTKvTIEqcEobsuT/VlfglPxJW4MbHXRn16jS+KN3EFNHgKp4e1Px0bhVQvIb9V
-# 3ODwC2drbaJ+f5PXkD1lX28VCQDhoAOjr02HUuipVedhjubfCmM33+LRoD7u6aEl
-# KUUnbOnC3gVVIGcCXWsrgyvyjqM2WQIDAQABo3YwdDATBgNVHSUEDDAKBggrBgEF
-# BQcDAzBdBgNVHQEEVjBUgBD8gBzCH4SdVIksYQ0DovzKoS4wLDEqMCgGA1UEAxMh
-# UG93ZXJTaGVsbCBMb2NhbCBDZXJ0aWZpY2F0ZSBSb290ghABvvi0sAAYvk29NHWg
-# Q1DUMAkGBSsOAwIdBQADggEBAI8+KceC8Pk+lL3s/ZY1v1ZO6jj9cKMYlMJqT0yT
-# 3WEXZdb7MJ5gkDrWw1FoTg0pqz7m8l6RSWL74sFDeAUaOQEi/axV13vJ12sQm6Me
-# 3QZHiiPzr/pSQ98qcDp9jR8iZorHZ5163TZue1cW8ZawZRhhtHJfD0Sy64kcmNN/
-# 56TCroA75XdrSGjjg+gGevg0LoZg2jpYYhLipOFpWzAJqk/zt0K9xHRuoBUpvCze
-# yrR9MljczZV0NWl3oVDu+pNQx1ALBt9h8YpikYHYrl8R5xt3rh9BuonabUZsTaw+
-# xzzT9U9JMxNv05QeJHCgdCN3lobObv0IA6e/xTHkdlXTsdgxggHhMIIB3QIBATBA
-# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdAIQ
-# mkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAig
-# AoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgEL
-# MQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUkBRO3Lbh+e+wCpoEdy/U
-# ouAH9FkwDQYJKoZIhvcNAQEBBQAEggEA16pq7qGQqxwbGq7oHFEgrYL+g7W5ixXu
-# XP8/jEPynVIXfLcSCFHxFhBq+iOXLA3cD/emW3rvCCCorUnBpSBlPxhNHwqtXWli
-# X56OYKqyaFJLKbeh4zvK+wAluKiwmwpaclFhSB9871GYIg7BNxWNJ3J8gJaEqo0k
-# epacEyanOY6wXbf6oTPE8KYYNFcpqTYnlSA8Dvu+hM1ZtMEhx7WfuD81ezoNVdZ2
-# BdWHo1j+Hksqp4hufrUcgF0gznq9P7SV9gbkG49odthewXA7wLbxMjuAHM/6OLz7
-# gcSqrLZPgBKPs9JMAV05Sh48gsTPkifXdoGAGkPNPu9If3zAiF1Z2A==
-# SIG # End signature block
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('i')]
+        [String]$Id
+    )
+
+    $Script:RegistryPath = Get-RegListRootPath
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
+    $LastId = 0
+    $num = 0
+    $Found = $True
+    While( $Found ){
+        $NumId = $Id + "_$num"
+
+        $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
+        log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
+
+        if($Found -eq $False){ return $LastId }
+        $LastId = $num
+        $num++
+        
+    }
+    log "Return $LastId"
+    return $LastId
+}
+
+function Get-NextIndexForId{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('i')]
+        [String]$Id
+    )
+    $Script:RegistryPath = Get-RegListRootPath
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
+    $Items = 0
+    $num = 0
+    $Found = $True
+    While( $Found ){
+        $NumId = $Id + "_$num"
+
+        $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
+        log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
+        if($Found -eq $True){ $Items++ }
+        $num++
+        
+    }
+    $Ret = $Items 
+    log "Return $Ret"
+    return $Ret
+}
+
+function New-RegListItem{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('s')]
+        [String]$String,
+        [Parameter(Mandatory=$true,Position=1)]
+        [Alias('i')]
+        [String]$Id
+    )
+
+    $Script:RegistryPath = Get-RegListRootPath
+
+    $i = Get-NextIndexForId "$Id"
+    log "Get-NextIndexForId `"$Id`" ==> $i "
+    
+    $NumId = $Id + "_$i"
+
+    
+    log "New-RegistryValue `"$Script:RegistryPath`" `"$NumId`" `"$String`" `"string`""
+    $null=New-RegistryValue "$Script:RegistryPath" "$NumId" "$String" "string"
+
+
+    
+}
+
+
+function Get-RegListLastItem{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('i')]
+        [String]$Id,
+        [Parameter(Mandatory=$false)]
+        [Alias('d')]
+        [switch]$Delete
+    )
+
+    $Script:RegistryPath = Get-RegListRootPath
+
+    try{
+
+        if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
+        $i = Get-LastIndexForId "$Id"
+        log "Get-LastIndexForId `"$Id`" ==> $i "
+        
+        $NumId = $Id + "_$i"
+
+        
+        log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`" `"$String`" `"string`""
+        $Exists=Test-RegistryValue "$Script:RegistryPath" "$NumId"
+
+        if($Exists){
+            $Value = Get-RegistryValue "$Script:RegistryPath" "$NumId"
+            if($Delete){
+                log "Delete Key..."
+                $Null = Remove-RegistryValue "$Script:RegistryPath" "$NumId"
+            }
+            return $Value
+        }else{
+            throw "Key doesn't exists"
+        }      
+    }catch{
+        log "$_" -t 'err'
+    }
+
+    
+}
+
+
+function Get-RegListItemList{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('i')]
+        [String]$Id
+    )
+    $Script:RegistryPath = Get-RegListRootPath
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
+    $Ret = [System.Collections.ArrayList]::new()
+    try{
+        $LastId = 0
+        $num = 0
+        $Found = $True
+        While( $Found ){
+            $NumId = $Id + "_$num"
+
+            $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
+            log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
+
+            if($Found -eq $True){  
+
+                $Exists=Test-RegistryValue "$Script:RegistryPath" "$NumId"
+
+                if($Exists){
+                    $Value = Get-RegistryValue "$Script:RegistryPath" "$NumId"
+                    $Null = $Ret.Add($Value)
+                }else{
+                    break;
+                }
+                $num++ 
+            }    
+        } 
+    }catch{
+        log "$_" -t 'err'
+    }
+
+    return $Ret
+    
+}
+
+
+
+function Remove-RegListItemList{
+
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [Alias('i')]
+        [String]$Id
+    )
+
+    $Script:RegistryPath = Get-RegListRootPath
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
+    $Ret = [System.Collections.ArrayList]::new()
+    try{
+        $LastId = 0
+        $num = 0
+        $Found = $True
+        While( $Found ){
+            $NumId = $Id + "_$num"
+
+            $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
+            log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
+
+            if($Found -eq $True){  
+
+                $Exists=Test-RegistryValue "$Script:RegistryPath" "$NumId"
+
+                if($Exists){
+                    $Null = Remove-RegistryValue "$Script:RegistryPath" "$NumId"
+                    log "Remove-RegistryValue `"$Script:RegistryPath`" `"$NumId`""
+                }else{
+                    break;
+                }
+                $num++ 
+            }    
+        } 
+    }catch{
+        log "$_" -t 'err'
+    }
+
+    return $Ret
+    
+}
+

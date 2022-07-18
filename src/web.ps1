@@ -28,7 +28,32 @@
 
 #>
 
- 
+
+
+function Invoke-BypassPaywall{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="url", Position=0)]
+        [string]$Url
+    )
+
+    $fn = New-RandomFilename -Extension 'html'
+  
+    Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "Invoke-WebRequest -Uri `"$Url`""
+
+    $Content = Invoke-WebRequest -Uri "$Url"
+    $sc = $Content.StatusCode    
+    if($sc -eq 200){
+        $cnt = $Content.Content
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "StatusCode $sc OK"
+        Set-Content -Path "$fn" -Value "$cnt"
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkGreen "start-process $fn"
+        start-process "$fn"
+    }else{
+        Write-Host -n -f DarkRed "[BypassPaywall] " ; Write-Host -f DarkYellow "ERROR StatusCode $sc"
+    }
+}
+
 
 function Get-ChromeApp{
 
@@ -142,3 +167,133 @@ function Invoke-OpenWebPage{
     write-host "Opening $Url with $BrowserExe" -f DarkYellow            
     start-process "$BrowserExe" -ArgumentList "$Url" 
 }
+
+
+function Save-WebSiteText {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$True)]
+        [string]$SiteUrl,
+        [Parameter(Mandatory=$False)]
+        [string]$Path,
+        [Parameter(Mandatory=$False)]
+        [switch]$RandomFile,
+        [Parameter(Mandatory=$False)]
+        [switch]$Open        
+    )
+    
+    # Make sure $SiteUrl is a valid Url
+    try {
+        $SiteUrlAsUriObj = [uri]$SiteUrl
+    }
+    catch {
+        Write-Error $_
+        $global:FunctionResult = "1"
+        return
+    }
+
+    if (![bool]$($SiteUrlAsUriObj.Scheme -match "http")) {
+        Write-Error "'$SiteUrl' does not appear to be a URL! Halting!"
+        $global:FunctionResult = "1"
+        return
+    }
+
+    $pldmggFunctionsUrl = "https://raw.githubusercontent.com/pldmgg/misc-powershell/master/MyFunctions"
+
+    if (![bool]$(Get-Command Install-Program -ErrorAction SilentlyContinue)) {
+        $InstallProgramFunctionUrl = "$pldmggFunctionsUrl/Install-Program.ps1"
+        try {
+            Invoke-Expression $([System.Net.WebClient]::new().DownloadString($InstallProgramFunctionUrl))
+        }
+        catch {
+            Write-Error $_
+            Write-Error "Unable to load the Install-Program function! Halting!"
+            $global:FunctionResult = "1"
+            return
+        }
+    }
+
+    try {
+        $InstallProgramSplatParams = @{
+            ProgramName             = "Nuget.CommandLine"
+            CommandName             = "nuget"
+            UseChocolateyCmdLine    = $True
+            ErrorAction             = "SilentlyContinue"
+            ErrorVariable           = "IPErr"
+        }
+
+        $InstallNuGetCmdLineResult = Install-Program @InstallProgramSplatParams
+        if (!$InstallNuGetCmdLineResult) {throw "The Install-Program function failed!"}
+    }
+    catch {
+        Write-Error $_
+        Write-Host "Errors for the Install-Program function are as follows:"
+        Write-Error $($IPErr | Out-String)
+        $global:FunctionResult = "1"
+        return
+    }
+
+    if (!$(Get-Command nuget -ErrorAction SilentlyContinue)) {
+        Write-Error "Unable to find 'nuget.exe' after Nuget.CommandLine install! Halting!"
+        $global:FunctionResult = "1"
+        return
+    }
+
+    $null = nuget install htmlagilitypack
+
+    if (!$(Test-Path "$HOME\.nuget\packages\htmlagilitypack")) {
+        Write-Error "The Nuget CommandLine did not install HTML Agility Pack to '$HOME\.nuget\packages\htmlagilitypack'! Halting!"
+        $global:FunctionResult = "1"
+        return
+    }
+
+    $CurrentlyLoadedAssemblies = [System.AppDomain]::CurrentDomain.GetAssemblies()
+
+    if (![bool]$($CurrentlyLoadedAssemblies.FullName -match "HtmlAgilityPack")) {
+        $PathToHtmlAgilityPackDLL = $(Resolve-Path "$HOME\.nuget\packages\htmlagilitypack\*\lib\net40\HtmlAgilityPack.dll").Path
+        [Reflection.Assembly]::LoadFile($PathToHtmlAgilityPackDLL)
+    }
+    else {
+        Write-Warning "HtmlAgilityPack is already loaded!"
+    }
+    
+    $Web = [HtmlAgilityPack.HtmlWeb]::new()
+    $HtmlDoc = [HtmlAgilityPack.HtmlDocument]$Web.Load($SiteUrl)
+    $TextNodes = $HtmlDoc.DocumentNode.SelectNodes("//*[not(self::script or self::style)]/text()")
+
+    $FinalTextBlob = foreach ($node in $TextNodes) {
+        if ($node.InnerText -match "[\w]") {
+            $node.InnerText
+        }
+    }
+
+    if($RandomFile){
+        $Path = New-RandomFilename -Extension 'html'
+        Set-Content -Path $Path -Value $FinalTextBlob
+        Write-Host -n -f DarkRed "[Save-WebSiteText] "
+        Write-Host "Saved to $Path"    
+        if($Open){
+            Invoke-Sublime $Path
+        }
+    }
+    elseif($PSBoundParameters.ContainsKey("Path")){
+        $Null = New-Item -Path $Path -Force -ErrorAction Ignore
+        $Null = Remove-Item -Path $Path -Force -ErrorAction Ignore
+        Set-Content -Path $Path -Value $FinalTextBlob
+        Write-Host -n -f DarkRed "[Save-WebSiteText] "
+        Write-Host "Saved to $Path"
+        if($Open){
+            Invoke-Sublime $Path
+        }
+    }
+    return $FinalTextBlob
+}
+
+
+
+
+
+
+
+
+

@@ -73,3 +73,54 @@ function Measure-TimeBlock{
     return $formatTime
 }
 
+
+Function Invoke-SimpleTimer {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(Mandatory=$true)]
+        [int]$Minutes
+    )
+     $MyNotifier  = 'C:\Programs\SystemTools\DownloadCompleted.exe'
+    $waitsofar = 0
+    $TotalSeconds = $Minutes * 60
+    Log "Starting TImer with a delay of $Minutes minutes or $TotalSeconds seconds"
+    $finished = $False
+    do
+    {
+
+        $percent = ($waitsofar / $TotalSeconds) * 100
+        Write-Progress -Activity "Testing" -Status "$percent% Complete:" -PercentComplete $percent
+        Start-Sleep -Milliseconds 1000
+        $waitsofar++
+        if($waitsofar -ge $TotalSeconds) { $finished = $true;}
+    }
+    while (-not $finished)
+    &$MyNotifier 
+}
+
+
+
+Function Invoke-SimpleAlarm {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(Mandatory=$true)]
+        [int]$Minutes
+    )
+    $MyNotifier  = 'C:\Programs\SystemTools\DownloadCompleted.exe'
+    $waitsofar = 0
+    $TotalSeconds = $Minutes * 60
+    $CurrDate = (Get-Date)
+    $Alarm = $CurrDate.AddMinutes($Minutes)
+    Log "Starting TImer with a delay of $Minutes minutes or $TotalSeconds seconds"
+    $AlarmStr = $Alarm.GetDateTimeFormats()[19]
+    Log "Alarm will start at $AlarmStr"
+    $finished = $False
+    do
+    {
+        $CurrDate = (Get-Date)
+        if( $CurrDate -gt $Alarm)  { $finished = $true;}
+        Start-Sleep -Milliseconds 1000
+    }
+    while (-not $finished)
+    &$MyNotifier 
+}
