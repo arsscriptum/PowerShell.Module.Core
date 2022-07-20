@@ -559,10 +559,10 @@ function New-RegListItem{
 
     $Script:RegistryPath = Get-RegListRootPath
 
-    $i = Get-NextIndexForId "$Id"
-    log "Get-NextIndexForId `"$Id`" ==> $i "
+    $i = Get-NextIndexForId "$Identifier"
+    log "Get-NextIndexForId `"$Identifier`" ==> $i "
     
-    $NumId = $Id + "_$i"
+    $NumId = $Identifier + "_$i"
 
     
     log "New-RegistryValue `"$Script:RegistryPath`" `"$NumId`" `"$String`" `"string`""
@@ -599,10 +599,10 @@ function Get-RegListLastItem{
     try{
 
         if ($PSBoundParameters.ContainsKey('Verbose')) { $Global:LogVerbose = $True }
-        $i = Get-LastIndexForId "$Id"
-        log "Get-LastIndexForId `"$Id`" ==> $i "
+        $i = Get-LastIndexForId "$Identifier"
+        log "Get-LastIndexForId `"$Identifier`" ==> $i "
         
-        $NumId = $Id + "_$i"
+        $NumId = $Identifier + "_$i"
 
         
         log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`" `"$String`" `"string`""
@@ -639,7 +639,7 @@ function Get-RegListItemList{
     param(
         [Parameter(Mandatory=$true,Position=0)]
         [Alias('i')]
-        [String]$Id
+        [String]$Identifier
     )
     $Script:RegistryPath = Get-RegListRootPath
 
@@ -650,7 +650,7 @@ function Get-RegListItemList{
         $num = 0
         $Found = $True
         While( $Found ){
-            $NumId = $Id + "_$num"
+            $NumId = $Identifier + "_$num"
 
             $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
             log "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
@@ -684,14 +684,14 @@ function Remove-RegListItemList{
     Delete all the strings, from the list associated to the ID in the registry
     .Description
     Delete all string, from the list associated to the ID in the registry.
-    .Parameter Id
+    .Parameter Identifier
     id
 #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
-        [Alias('i')]
-        [String]$Id,
+        [Alias('i', 'Id')]
+        [String]$Identifier,
         [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="test only")]
         [switch]$Test        
     )
@@ -712,7 +712,7 @@ function Remove-RegListItemList{
         $num = 0
         $Found = $True
         While( $Found ){
-            $NumId = $Id + "_$num"
+            $NumId = $Identifier + "_$num"
 
             $Found = Test-RegistryValue "$Script:RegistryPath" "$NumId"
              Write-Verbose "Test-RegistryValue `"$Script:RegistryPath`" `"$NumId`"  ==> Found $Found"
