@@ -430,50 +430,6 @@ function Update-File {
 }
 
 
-function Remove-FileFolder {
-    # Uses the Test-FileLock function within a loop to delete targetFile/folder and will attempt every $retryTimeInSeconds value.
-    param(
-        [parameter(Mandatory)][string]$target,
-        [int]$retryTimeInSeconds = 60
-    )
-
-    $SpecialCharacter = $target.Contains('*') -Or $target.Contains('?')
-    if($SpecialCharacter) { throw "Cannot use wildcards with this function... yet." }
-    $targetItem = Get-Item $target
-    $targetPath = $targetItem.FullName
-
-    $type = if ($targetItem.PSIsContainer) { "Folder" }else { "File" }
-
-    $script:isLocked = $true
-    do {
-        if ($type -eq "Folder") {
-            foreach ($item in Get-ChildItem $targetPath -Recurse) {
-                $isLocked = Test-FileLock $item.FullName
-                if ($isLocked) {
-                    $type = $type = if ($item.PSIsContainer) { "Folder" }else { "File" }
-                    Write-Log "$type ($($item.FullName)) locked, trying again in $retryTimeInSeconds seconds."
-                    Start-Sleep $retryTimeInSeconds
-                }
-            }
-        }
-        else {
-            $isLocked = Test-FileLock $targetPath
-            if ($isLocked) {
-                Write-Log "$type ($($targetPath)) locked, trying again in $retryTimeInSeconds seconds."
-                Start-Sleep $retryTimeInSeconds
-            }
-        }        
-    }while ($isLocked)
-
-    Write-Log "$type ($($targetPath)) not locked. Deleting." Green
-    if ($type -eq "Folder") {
-        Remove-Item -Path $targetPath -Recurse    
-    }
-    else {
-        Remove-Item -Path $targetPath
-    }
-}
-
 
 
 function Get-ObjectProperties {
@@ -996,12 +952,44 @@ function Get-RecycleBinItemDetails {
     } #process
 }
 
+
+
 function Remove-ItemCustom {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)][object[]]$Paths,
-        [Parameter(Mandatory = $false)][switch]$Force
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="path")]
+        [object[]]$Paths
     )
+
+
+try{
+
+Add-Type @'
+    using System;
+    using System.Text;
+    using System.Runtime.InteropServices;
+       
+    public class DelayedMoveFile
+    {
+        public enum MoveFileFlags
+        {
+            MOVEFILE_DELAY_UNTIL_REBOOT         = 0x00000004
+        }
+ 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern bool MoveFileEx(string lpExistingFileName, string lpNewFileName, MoveFileFlags dwFlags);
+        
+        public static bool MarkFileDelete (string sourcefile)
+        {
+            return MoveFileEx(sourcefile, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);         
+        }
+    }
+'@
+}catch{}
+
+
+
+     $script:isLocked = $true
     if ($MyInvocation.Line -match 'rmf' -or $Force) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
     foreach ($path in $Paths) {
         $WildcardCharacters = $path.Contains('*') -Or $path.Contains('?')
@@ -1013,11 +1001,23 @@ function Remove-ItemCustom {
         else {
             $fullpath = $item.FullName
             Write-Log ($FileMessage -f $fullpath)
+
             if (Test-Path -Path $fullpath -PathType Container) {
-                [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($fullpath, 'OnlyErrorDialogs', $DeleteMode)
-            }
-            else {
-                [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($fullpath, 'OnlyErrorDialogs', $DeleteMode)
+                [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($fullpath, 'OnlyErrorDialogs', $DeleteMode)    
+            }else {
+                #Grant-Ownership -Path $fullPath -ObjectType 'file' -Force | Out-null
+                $isLocked = Test-FileLock $fullpath
+                if ($isLocked) {
+                    Write-Log "$type ($($fullpath)) locked."
+                    $deleteResult = [DelayedMoveFile]::MarkFileDelete($fullpath)
+                    if ($deleteResult -eq $false) {
+                        throw "Error on delete $fullpath " # calls GetLastError
+                    } else {
+                        write-log "Delete of $fullpath failed: $($_.Exception.Message)  Deleting at next boot."
+                    }
+                }else{
+                    [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($fullpath, 'OnlyErrorDialogs', $DeleteMode)    
+                }
             }
             (Get-DeleteBuffer).AddItem($item.Name, $fullpath, $DeleteMode)
         }

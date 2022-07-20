@@ -550,11 +550,11 @@ function New-RegListItem{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
-        [Alias('s')]
-        [String]$String,
+        [Alias('Id')]
+        [String]$Identifier,
         [Parameter(Mandatory=$true,Position=1)]
-        [Alias('i')]
-        [String]$Id
+        [Alias('Str','s')]
+        [String]$String
     )
 
     $Script:RegistryPath = Get-RegListRootPath
@@ -587,10 +587,10 @@ function Get-RegListLastItem{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true,Position=0)]
-        [Alias('i')]
-        [String]$Id,
+        [Alias('Id')]
+        [String]$Identifier,
         [Parameter(Mandatory=$false)]
-        [Alias('d')]
+        [Alias('d','Del')]
         [switch]$Delete
     )
 

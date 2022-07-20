@@ -146,7 +146,6 @@ function Invoke-Process
             }
 
             Write-Verbose -Message "Results cmdExitCode $cmdExitCode cmdId $cmdId cmdName $cmdName"
-            Write-Verbose -Message "Results cmd $cmd"
 
 
             $stdOut = Get-Content -Path $FNameOut -Raw
