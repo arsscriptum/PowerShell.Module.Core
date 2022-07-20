@@ -958,7 +958,9 @@ function Remove-ItemCustom {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="path")]
-        [object[]]$Paths
+        [object[]]$Paths,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$true, HelpMessage="force")]
+        [switch]$Force
     )
 
 
@@ -985,15 +987,17 @@ Add-Type @'
         }
     }
 '@
-}catch{}
+}catch{
+    Write-Warning "Class DelayedMoveFile already added"
+}
 
 
      $script:isLocked = $true
     if ($MyInvocation.Line -match 'rmf' -or $Force -or $PSBoundParameters.ContainsKey('Force')) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
-    foreach ($path in $Paths) {
-        $WildcardCharacters = $path.Contains('*') -Or $path.Contains('?')
+    foreach ($Path in $Paths) {
+        $WildcardCharacters = $Path.Contains('*') -Or $Path.Contains('?')
         if($WildcardCharacters) { throw "Cannot use wildcards with this function... yet." }
-        $item = Get-Item -Path $path -ErrorAction SilentlyContinue
+        $item = Get-Item -Path $Path -ErrorAction SilentlyContinue
         if ($null -eq $item) {
             Write-Error ("'{0}' not found" -f $Path)
         }
