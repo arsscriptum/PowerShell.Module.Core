@@ -988,9 +988,8 @@ Add-Type @'
 }catch{}
 
 
-
      $script:isLocked = $true
-    if ($MyInvocation.Line -match 'rmf' -or $Force) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
+    if ($MyInvocation.Line -match 'rmf' -or $Force -or $PSBoundParameters.ContainsKey('Force')) { $FileMessage = "Permanently deleting '{0}'."; $DeleteMode = "DeletePermanently" }else { $FileMessage = "Sending '{0}' to Recycle Bin."; $DeleteMode = "SendToRecycleBin" }
     foreach ($path in $Paths) {
         $WildcardCharacters = $path.Contains('*') -Or $path.Contains('?')
         if($WildcardCharacters) { throw "Cannot use wildcards with this function... yet." }
