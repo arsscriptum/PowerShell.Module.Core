@@ -754,3 +754,39 @@ function Show-MessageBoxStandby{
 
 }
 
+
+
+
+function Show-MessageBoxRestart{
+<#
+    .SYNOPSIS
+    Display a mesage box with colors to highlight a ERROR message
+    .DESCRIPTION
+    Display a mesage box with colors to highlight a WARNING message
+    .PARAMETER Text
+    String to display
+#>
+ [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $True, Position = 0, ValueFromPipeline = $True)]
+        [string]$Text,
+        [Parameter(Mandatory = $False, Position = 1, ValueFromPipeline = $True)]
+        [string]$Title = "Computer Restart Requested"
+    )
+        $Content = $Text
+       
+        $Params = @{
+            Content = "$Content"
+            Title = $Title
+            ContentBackground = "Blue"
+            FontFamily = "Tahoma"
+            TitleFontWeight = "Heavy"
+            TitleBackground = "Blue"
+            TitleTextForeground = "White"
+            ContentTextForeground = "White"
+            ButtonTextForeground = "White"
+            ButtonType = 'OK'
+        }
+         
+        Show-MessageBox @Params
+}
